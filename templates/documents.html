@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My CVs | Easywork.LK</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #f2cc00;
+  --brand-dark: #c9a800;
+  --brand-amber: #ba7517;
+  --accent: #ba7517;
+  --ink: #111;
+  --text: #1e1e1e;
+  --muted: #6b6b6b;
+  --line: #e8e4d4;
+  --bg: #f9f7f0;
+  --panel: #ffffff;
+  --panel-soft: #fffdf7;
+  --success: #1a6e3c;
+  --danger: #b84730;
+  --shadow: 0 2px 4px rgba(0,0,0,0.04), 0 18px 42px rgba(0,0,0,0.08);
+  --topbar-h: 62px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: linear-gradient(to bottom, #f9f7f0, #fffdf4);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+button, input { font: inherit; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+  min-height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 22px;
+  background: rgba(255,255,255,0.9);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.logo {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.32rem;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.logo span { color: var(--brand-amber); }
+.topbar-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--line);
+}
+.page-pill,
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.page-pill {
+  background: #fff8df;
+  border: 1px solid #eadb93;
+  color: #7a5c00;
+}
+.count-pill {
+  background: #fff3dc;
+  border: 1px solid #f0d39d;
+  color: #9a6507;
+}
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.tb-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+.tb-avatar-ph {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-amber));
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: 0.18s ease;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.toolbar-btn:hover { transform: translateY(-1px); }
+.toolbar-ghost {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--text);
+}
+.toolbar-ghost:hover { background: #faf7ef; }
+.toolbar-accent {
+  background: var(--brand);
+  color: var(--ink);
+  box-shadow: 0 6px 18px rgba(242,204,0,0.22);
+}
+.toolbar-accent:hover { background: var(--brand-dark); }
+
+.page-shell {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+}
+.hero-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,250,232,0.95));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: 28px;
+  padding: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.7fr);
+  gap: 24px;
+  margin-bottom: 22px;
+}
+.hero-copy .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #eadb93;
+  background: #fff8df;
+  color: #7a5c00;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hero-copy h1 {
+  margin-top: 14px;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  line-height: 1.04;
+  color: var(--ink);
+  letter-spacing: -0.4px;
+}
+.hero-copy p {
+  margin-top: 12px;
+  max-width: 700px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 18px;
+}
+.stat-num {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--ink);
+}
+.stat-label {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.control-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filter-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.filter-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  transition: 0.18s ease;
+}
+.filter-btn:hover,
+.filter-btn.active {
+  border-color: #eadb93;
+  background: #fff8df;
+  color: #7a5c00;
+}
+.search-box {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: min(100%, 290px);
+  padding: 0 14px;
+  min-height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+}
+.search-box:focus-within {
+  border-color: #eadb93;
+  box-shadow: 0 0 0 4px rgba(242,204,0,0.12);
+}
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+.search-box span {
+  color: var(--muted);
+}
+
+.cv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 22px;
+}
+.cv-card {
+  background: rgba(255,255,255,0.96);
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+  position: relative;
+  box-shadow: 0 8px 26px rgba(0,0,0,.04);
+}
+.cv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0,0,0,.08);
+  border-color: #ddd1ac;
+}
+.card-preview {
+  height: 188px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, #fffaf0, #f8f4e8);
+  border-bottom: 1px solid var(--line);
+}
+.preview-color-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+.template-tag {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(17,17,17,.72);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 5px 10px;
+}
+.template-preview-stage { position: relative; height: 100%; overflow: hidden; }
+.doc-mini { position: absolute; inset: 14px; background: #fff; border-radius: 14px; box-shadow: 0 12px 26px rgba(0,0,0,.08); overflow: hidden; }
+.doc-mini .shell { height: 100%; padding: 14px; font-size: 7px; line-height: 1.45; color: #333; }
+.doc-mini .name { font-size: 10px; font-weight: 800; line-height: 1.1; }
+.doc-mini .headline { font-size: 6.8px; color: #727272; margin-top: 3px; }
+.doc-mini .contact { font-size: 6.3px; color: #909090; margin-top: 4px; }
+.doc-mini .label { font-size: 6px; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; margin: 9px 0 5px; }
+.doc-mini .line { height: 5px; background: #eee8de; border-radius: 999px; margin-bottom: 4px; }
+.doc-mini .line.sm { width: 58%; }
+.doc-mini .line.md { width: 76%; }
+.doc-mini .line.lg { width: 92%; }
+.doc-mini .tag { display: inline-block; font-size: 5.8px; padding: 2px 5px; border-radius: 999px; background: #f7f2e4; margin: 0 3px 3px 0; }
+.doc-mini.modern .hero { padding: 14px; color: #fff; }
+.doc-mini.modern .hero .headline, .doc-mini.modern .hero .contact { color: rgba(255,255,255,.78); }
+.doc-mini.atsclean .shell { border-top: 4px solid #111; }
+.doc-mini.atsclean .label { color: #111 !important; }
+.doc-mini.atscompact .top { height: 8px; background: #111; }
+.doc-mini.atscompact .shell { padding-top: 10px; }
+.doc-mini.atscompact .label { color: #111 !important; }
+.doc-mini.minimal .shell { border-top: 3px solid #111; }
+.doc-mini.minimal .label { color: #111 !important; letter-spacing: .16em; }
+.doc-mini.hybrid .shell { padding: 0; display: grid; grid-template-columns: 16px 1fr; }
+.doc-mini.hybrid .rail { background: linear-gradient(180deg, var(--mini-color, #ba7517), #efe8d8); }
+.doc-mini.hybrid .main { padding: 12px 12px 10px; }
+.doc-mini.impact .top { height: 10px; background: linear-gradient(90deg, #111, var(--mini-color, #ba7517)); }
+.doc-mini.impact .shell { padding-top: 10px; }
+.doc-mini.sidebar .shell, .doc-mini.creative .shell, .doc-mini.twocol .shell { padding: 0; display: grid; grid-template-columns: 74px 1fr; }
+.doc-mini.sidebar .aside, .doc-mini.creative .aside { padding: 12px 10px; color: #fff; }
+.doc-mini.sidebar .main, .doc-mini.creative .main, .doc-mini.twocol .main { padding: 12px 12px 10px; }
+.doc-mini.sidebar .aside .sub, .doc-mini.creative .aside .sub { color: rgba(255,255,255,.78); font-size: 6.4px; margin-top: 3px; }
+.doc-mini.sidebar .aside .label, .doc-mini.creative .aside .label { color: rgba(255,255,255,.7); margin-top: 10px; }
+.doc-mini.twocol .aside { background: #fbfaf7; border-right: 1px solid #eee6d6; padding: 12px 10px; }
+.doc-mini.executive .top { height: 8px; }
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17,17,17,.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.cv-card:hover .card-overlay { opacity: 1; }
+.overlay-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+}
+.overlay-view { background: #fff; color: var(--ink); }
+.overlay-view:hover { background: #f7f3e8; }
+.overlay-edit { background: var(--brand); color: var(--ink); }
+.overlay-edit:hover { background: var(--brand-dark); }
+.card-body { padding: 18px; }
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-subtitle {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin-bottom: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.card-badges,
+.card-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 5px 10px;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+.badge-template { background: #fff8df; color: #7a5c00; border: 1px solid #eadb93; }
+.badge-date { background: #f7f3e8; color: var(--muted); border: 1px solid var(--line); }
+.act-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all .15s;
+  text-decoration: none;
+  color: var(--ink);
+}
+.act-btn:hover { border-color: #eadb93; background: #fff8df; }
+.act-btn.danger:hover { border-color: #efc0b5; background: #fff2ef; }
+
+.empty-state {
+  text-align: center;
+  padding: 72px 22px;
+  display: none;
+  background: rgba(255,255,255,0.8);
+  border: 1px dashed #d8cfb6;
+  border-radius: 24px;
+}
+.empty-state.show { display: block; }
+.empty-icon { font-size: 60px; margin-bottom: 16px; opacity: .45; }
+.empty-state h2 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+.empty-state p {
+  font-size: .96rem;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(17,17,17,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  padding: 18px;
+}
+.modal-bg.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: #fff;
+  border-radius: 22px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 48px rgba(0,0,0,.14);
+  transform: scale(.96);
+  transition: transform .2s;
+}
+.modal-bg.show .modal { transform: scale(1); }
+.modal h3 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+.modal p { font-size: .94rem; color: var(--muted); margin-bottom: 22px; line-height: 1.7; }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.modal-cancel,
+.modal-delete {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.modal-cancel {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+}
+.modal-delete {
+  border: none;
+  background: var(--danger);
+  color: #fff;
+}
+
+#toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 600;
+  display: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.16);
+}
+#toast.show { display: block; }
+#toast.success { background: var(--success); }
+#toast.error { background: var(--danger); }
+
+@media (max-width: 920px) {
+  .hero-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .topbar-left,
+  .topbar-right { width: 100%; }
+  .topbar-divider { display: none; }
+  .toolbar-btn { flex: 1 1 auto; }
+  .search-box { margin-left: 0; width: 100%; }
+  .control-bar { align-items: stretch; }
+}
+
+@media (max-width: 640px) {
+  .page-shell { padding: 20px 14px 48px; }
+  .hero-panel { padding: 20px; border-radius: 22px; }
+  .hero-copy h1 { font-size: 2rem; }
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .cv-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">Easywork<span>.LK</span></a>
+    <div class="topbar-divider"></div>
+    <span class="page-pill">My Documents</span>
+    <span class="count-pill"><span id="stat-total-pill">{{ resumes | length }}</span> saved</span>
+  </div>
+  <div class="topbar-right">
+    <div class="user-chip">
+      {% if user.picture %}
+        <img src="{{ user.picture }}" alt="{{ user.name }}" class="tb-avatar">
+      {% else %}
+        <div class="tb-avatar-ph">{{ (user.name or 'U')[0] | upper }}</div>
+      {% endif %}
+      <span>{{ user.name }}</span>
+    </div>
+    <a href="/" class="toolbar-btn toolbar-ghost">Home</a>
+    <a href="/improve" class="toolbar-btn toolbar-accent">+ New CV</a>
+    <a href="/logout" class="toolbar-btn toolbar-ghost">Logout</a>
+  </div>
+</div>
+
+<div class="page-shell">
+  <section class="hero-panel">
+    <div class="hero-copy">
+      <span class="eyebrow">Saved resumes</span>
+      <h1>All your CVs in one clean, consistent workspace.</h1>
+      <p>Browse, search, edit, and manage your saved CVs with the same Easywork.LK styling used on the home experience. Logic and routes stay exactly the same.</p>
+      <div class="hero-actions">
+        <a href="/improve" class="toolbar-btn toolbar-accent">Create another CV</a>
+        <a href="/" class="toolbar-btn toolbar-ghost">Back to home</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">{{ resumes | length }}</div>
+        <div class="stat-label">Total CVs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-saved">{{ resumes | length }}</div>
+        <div class="stat-label">Saved</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="control-bar">
+    <div class="filter-group">
+      <span class="filter-label">Filter</span>
+      <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+      <button class="filter-btn" onclick="filterCards('classic', this)">Classic</button>
+      <button class="filter-btn" onclick="filterCards('atsclean', this)">ATS Clean</button>
+      <button class="filter-btn" onclick="filterCards('atscompact', this)">ATS Compact</button>
+      <button class="filter-btn" onclick="filterCards('minimal', this)">Minimal</button>
+      <button class="filter-btn" onclick="filterCards('hybrid', this)">Hybrid</button>
+      <button class="filter-btn" onclick="filterCards('impact', this)">Impact</button>
+      <button class="filter-btn" onclick="filterCards('modern', this)">Modern</button>
+      <button class="filter-btn" onclick="filterCards('sidebar', this)">Sidebar</button>
+      <button class="filter-btn" onclick="filterCards('twocol', this)">Two Col</button>
+      <button class="filter-btn" onclick="filterCards('executive', this)">Executive</button>
+      <button class="filter-btn" onclick="filterCards('creative', this)">Creative</button>
+    </div>
+    <div class="search-box">
+      <span>&#128269;</span>
+      <input type="text" placeholder="Search CVs..." oninput="searchCards(this.value)">
+    </div>
+  </div>
+
+  <div class="cv-grid" id="cv-grid">
+    {% for r in resumes %}
+    {% set tpl   = r.saved_template or 'classic' %}
+    {% set color = r.theme_color or '#ba7517' %}
+    {% set enc_color = color | urlencode %}
+    {% set view_url = '/result/' ~ r.result_id ~ '?template=' ~ tpl ~ '&color=' ~ enc_color %}
+    {% set edit_url = '/edit/'   ~ r.result_id ~ '?template=' ~ tpl ~ '&color=' ~ enc_color %}
+    {% set safe_name = (r.resume_data.full_name or r.user_name or 'Untitled CV') | replace("'", "\\'") | replace('"', '&quot;') %}
+
+    <div class="cv-card"
+         data-id="{{ r.result_id }}"
+         data-template="{{ tpl }}"
+         data-color="{{ color }}"
+         data-name="{{ (r.resume_data.full_name or r.user_name or '') | lower | e }}"
+         data-headline="{{ (r.resume_data.headline or '') | lower | e }}">
+
+      <div class="card-preview">
+        <div class="preview-color-bar"></div>
+        <div class="template-preview-stage"></div>
+        <span class="template-tag">{{ tpl }}</span>
+
+        <div class="card-overlay">
+          <a href="{{ view_url }}" class="overlay-btn overlay-view">&#128065; View</a>
+          <a href="{{ edit_url }}" class="overlay-btn overlay-edit">&#9998; Edit</a>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="card-title">{{ r.resume_data.full_name or r.user_name or 'Untitled CV' }}</div>
+        <div class="card-subtitle">{{ r.resume_data.headline or 'No headline added' }}</div>
+        <div class="card-meta">
+          <div class="card-badges">
+            <span class="badge badge-template">{{ tpl }}</span>
+            <span class="badge badge-date">
+              {% if r.updated_at %}{{ r.updated_at.strftime('%b %d, %Y') }}
+              {% else %}{{ r.created_at.strftime('%b %d, %Y') }}{% endif %}
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="{{ view_url }}" class="act-btn" title="View CV">&#128065;</a>
+            <a href="{{ edit_url }}" class="act-btn" title="Edit CV">&#9998;</a>
+            <button class="act-btn danger" title="Delete CV"
+                    data-delete-id="{{ r.result_id }}"
+                    data-delete-name="{{ safe_name }}"
+                    onclick="confirmDelete(this)">&#128465;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="empty-state {% if not resumes %}show{% endif %}" id="empty-state">
+    <div class="empty-icon">&#128196;</div>
+    <h2 id="empty-title">No CVs yet</h2>
+    <p id="empty-desc">Upload your CV and let AI transform it into a polished, professional resume.</p>
+    <a href="/improve" class="toolbar-btn toolbar-accent" id="empty-cta">+ Create My First CV</a>
+  </div>
+</div>
+
+<div class="modal-bg" id="delete-modal">
+  <div class="modal">
+    <h3>Delete CV?</h3>
+    <p id="delete-msg">Are you sure you want to delete this CV? This action cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-delete" onclick="doDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  var deleteTargetId = null;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function(ch) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+
+  function templatePreviewMarkup(template, color, name, headline) {
+    var safeName = escapeHtml(name || 'Untitled CV');
+    var safeHeadline = escapeHtml(headline || 'Professional resume');
+    var lines = '<div class="line lg"></div><div class="line md"></div><div class="line sm"></div>';
+    var labels = '<div class="label" style="color:' + color + '">Profile</div>' + lines + '<div class="label" style="color:' + color + '">Experience</div>' + lines;
+    if (template === 'modern') {
+      return '<div class="doc-mini modern"><div class="shell"><div class="hero" style="background:' + color + '"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email · phone · city</div></div>' + labels + '<div class="label" style="color:' + color + '">Skills</div><span class="tag">Leadership</span><span class="tag">Strategy</span></div></div>';
+    }
+    if (template === 'sidebar') {
+      return '<div class="doc-mini sidebar"><div class="shell"><div class="aside" style="background:' + color + '"><div class="name">' + safeName + '</div><div class="sub">' + safeHeadline + '</div><div class="label">Contact</div><div class="sub">email · phone</div><div class="label">Skills</div><div class="sub">Leadership<br>Communication</div></div><div class="main">' + labels + '</div></div></div>';
+    }
+    if (template === 'atsclean') {
+      return '<div class="doc-mini atsclean"><div class="shell"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email Â· phone Â· city</div>' + labels + '<div class="label">Skills</div><div class="line lg"></div><div class="line md"></div></div></div>';
+    }
+    if (template === 'atscompact') {
+      return '<div class="doc-mini atscompact"><div class="top" style="background:' + color + '"></div><div class="shell"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email Â· phone Â· city</div><div class="label">Summary</div><div class="line lg"></div><div class="line md"></div><div class="label">Experience</div>' + lines + '<div class="label">Skills</div><span class="tag">ATS</span><span class="tag">Impact</span><span class="tag">Keywords</span></div></div>';
+    }
+    if (template === 'minimal') {
+      return '<div class="doc-mini minimal"><div class="shell"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email Â· phone Â· city</div>' + labels + '<div class="label">Skills</div><div class="line lg"></div><div class="line md"></div></div></div>';
+    }
+    if (template === 'hybrid') {
+      return '<div class="doc-mini hybrid" style="--mini-color:' + color + '"><div class="shell"><div class="rail"></div><div class="main"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="label">Experience</div>' + lines + '<div class="label">Skills</div><div class="line md"></div><div class="line sm"></div></div></div></div>';
+    }
+    if (template === 'impact') {
+      return '<div class="doc-mini impact" style="--mini-color:' + color + '"><div class="top"></div><div class="shell"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email Â· phone Â· city</div><div class="label">Highlights</div><div class="line lg"></div><div class="line md"></div><div class="label">Experience</div>' + lines + '</div></div>';
+    }
+    if (template === 'twocol') {
+      return '<div class="doc-mini twocol"><div class="shell"><div class="aside"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="label" style="color:' + color + '">Skills</div><span class="tag">ATS</span><span class="tag">Projects</span></div><div class="main">' + labels + '</div></div></div>';
+    }
+    if (template === 'executive') {
+      return '<div class="doc-mini executive"><div class="top" style="background:' + color + '"></div><div class="shell"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email · phone · city</div>' + labels + '</div></div>';
+    }
+    if (template === 'creative') {
+      return '<div class="doc-mini creative"><div class="shell"><div class="aside" style="background:' + color + '"><div class="name">' + safeName + '</div><div class="sub">' + safeHeadline + '</div><div class="label">Profile</div><div class="sub">Creative and modern layout</div></div><div class="main"><div class="label" style="color:' + color + '">Experience</div>' + lines + '<div class="label" style="color:' + color + '">Skills</div><span class="tag">Design</span><span class="tag">Brand</span></div></div></div>';
+    }
+    return '<div class="doc-mini classic"><div class="shell"><div class="name">' + safeName + '</div><div class="headline">' + safeHeadline + '</div><div class="contact">email · phone · city</div>' + labels + '<div class="label" style="color:' + color + '">Skills</div><span class="tag">Planning</span><span class="tag">Writing</span></div></div>';
+  }
+
+  function applyCardColours() {
+    document.querySelectorAll('.cv-card').forEach(function (card) {
+      var color = card.getAttribute('data-color') || '#ba7517';
+      var template = card.getAttribute('data-template') || 'classic';
+      var name = card.querySelector('.card-title') ? card.querySelector('.card-title').textContent.trim() : 'Untitled CV';
+      var headline = card.querySelector('.card-subtitle') ? card.querySelector('.card-subtitle').textContent.trim() : 'Professional resume';
+      var bar = card.querySelector('.preview-color-bar');
+      if (bar) bar.style.background = color;
+      var stage = card.querySelector('.template-preview-stage');
+      if (stage) stage.innerHTML = templatePreviewMarkup(template, color, name, headline);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', applyCardColours);
+
+  function filterCards(template, btn) {
+    document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.cv-card').forEach(function (card) {
+      var match = template === 'all' || card.dataset.template === template;
+      card.style.display = match ? '' : 'none';
+    });
+    checkEmpty(template !== 'all');
+  }
+  window.filterCards = filterCards;
+
+  function searchCards(query) {
+    var q = query.toLowerCase().trim();
+    document.querySelectorAll('.cv-card').forEach(function (card) {
+      var name = card.dataset.name || '';
+      var headline = card.dataset.headline || '';
+      var match = !q || name.includes(q) || headline.includes(q);
+      card.style.display = match ? '' : 'none';
+    });
+    checkEmpty(!!q);
+  }
+  window.searchCards = searchCards;
+
+  function checkEmpty(isFiltered) {
+    var visible = Array.prototype.filter.call(
+      document.querySelectorAll('.cv-card'),
+      function (c) { return c.style.display !== 'none'; }
+    );
+    var emptyEl  = document.getElementById('empty-state');
+    var titleEl  = document.getElementById('empty-title');
+    var descEl   = document.getElementById('empty-desc');
+    var ctaEl    = document.getElementById('empty-cta');
+
+    if (visible.length === 0) {
+      emptyEl.classList.add('show');
+      if (isFiltered) {
+        titleEl.textContent = 'No matching CVs';
+        descEl.textContent = 'Try a different filter or search term.';
+        ctaEl.style.display = 'none';
+      } else {
+        titleEl.textContent = 'No CVs yet';
+        descEl.textContent = 'Upload your CV and let AI transform it into a polished, professional resume.';
+        ctaEl.style.display = '';
+      }
+    } else {
+      emptyEl.classList.remove('show');
+    }
+  }
+
+  function confirmDelete(btn) {
+    deleteTargetId = btn.getAttribute('data-delete-id');
+    var name = btn.getAttribute('data-delete-name') || 'this CV';
+    document.getElementById('delete-msg').textContent =
+      'Are you sure you want to delete "' + name + '"? This cannot be undone.';
+    document.getElementById('delete-modal').classList.add('show');
+  }
+  window.confirmDelete = confirmDelete;
+
+  function closeModal() {
+    document.getElementById('delete-modal').classList.remove('show');
+    deleteTargetId = null;
+  }
+  window.closeModal = closeModal;
+
+  function doDelete() {
+    if (!deleteTargetId) return;
+    var id = deleteTargetId;
+    closeModal();
+
+    fetch('/api/result/' + id + '/delete', {
+      method: 'DELETE',
+      credentials: 'same-origin'
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.ok) {
+        var card = document.querySelector('[data-id="' + id + '"]');
+        if (card) {
+          card.style.transition = 'opacity .3s, transform .3s';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(.95)';
+          setTimeout(function () {
+            card.remove();
+            updateStats();
+            checkEmpty(false);
+          }, 300);
+        }
+        showToast('CV deleted successfully', 'success');
+      } else {
+        showToast('Delete failed: ' + (data.error || 'unknown error'), 'error');
+      }
+    })
+    .catch(function () {
+      showToast('Network error — please try again', 'error');
+    });
+  }
+  window.doDelete = doDelete;
+
+  function updateStats() {
+    var total = document.querySelectorAll('.cv-card').length;
+    var t1 = document.getElementById('stat-total');
+    var t2 = document.getElementById('stat-saved');
+    var t3 = document.getElementById('stat-total-pill');
+    if (t1) t1.textContent = total;
+    if (t2) t2.textContent = total;
+    if (t3) t3.textContent = total;
+  }
+
+  function showToast(msg, type) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show' + (type ? ' ' + type : '');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.className = ''; }, 3000);
+  }
+
+  document.getElementById('delete-modal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+  });
+}());
+</script>
+</body>
+</html>

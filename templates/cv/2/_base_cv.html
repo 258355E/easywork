@@ -1,0 +1,65 @@
+{% from "cv/_resume_sections.html" import contact_item, render_summary, render_experience, render_education, render_certifications, render_skills %}
+<style>
+  :root {
+    --accent: {{ theme or '#2563eb' }};
+    --text: #111827;
+    --muted: #4b5563;
+    --line: #d1d5db;
+    --paper: #ffffff;
+    --soft: #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--text); background: #ffffff; }
+  .resume-page { max-width: 860px; margin: 0 auto; background: var(--paper); padding: 32px 36px; }
+  .resume-header { border-bottom: 2px solid var(--accent); padding-bottom: 18px; margin-bottom: 22px; }
+  .resume-name { font-size: 30px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
+  .resume-headline { margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--accent); font-weight: 700; }
+  .resume-contact { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; }
+  .contact-item::after { content: '|'; margin-left: 14px; color: var(--line); }
+  .contact-item:last-child::after { content: ''; margin: 0; }
+  .contact-value { color: var(--muted); }
+  .resume-section { margin-top: 18px; }
+  .resume-section__title { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .resume-summary { margin: 0; font-size: 14px; line-height: 1.7; color: var(--muted); }
+  .resume-entry + .resume-entry { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; }
+  .entry-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+  .entry-title { font-size: 16px; line-height: 1.35; font-weight: 700; }
+  .entry-subtitle { margin-top: 3px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .entry-date { white-space: nowrap; font-size: 12px; line-height: 1.5; color: var(--muted); font-weight: 700; }
+  .resume-bullets { margin: 8px 0 0; padding-left: 18px; color: var(--text); font-size: 14px; line-height: 1.6; }
+  .resume-bullets li + li { margin-top: 5px; }
+  .skills-group { display: grid; gap: 10px; }
+  .skills-group__label { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .skills-group__list { font-size: 14px; line-height: 1.6; color: var(--muted); }
+  @page { margin: 0.55in; }
+  @media print {
+    body { background: #ffffff; }
+    .resume-page { max-width: none; padding: 0; }
+  }
+  @media (max-width: 720px) {
+    .resume-page { padding: 20px; }
+    .entry-head { flex-direction: column; gap: 4px; }
+    .entry-date { white-space: normal; }
+    .contact-item::after { display: none; }
+  }
+</style>
+<div class="resume-page template-{{ template or 'modern' }}">
+  <header class="resume-header">
+    <div class="resume-name">{{ cv.full_name or 'Your Name' }}</div>
+    {% if cv.headline %}<div class="resume-headline">{{ cv.headline }}</div>{% endif %}
+    <div class="resume-contact">
+      {{ contact_item('phone', cv.contact.phone) }}
+      {{ contact_item('email', cv.contact.email) }}
+      {{ contact_item('linkedin', cv.contact.linkedin) }}
+      {{ contact_item('address', cv.contact.address) }}
+    </div>
+  </header>
+
+  <main class="resume-body">
+    {{ render_summary(cv) }}
+    {{ render_experience(cv) }}
+    {{ render_education(cv) }}
+    {{ render_certifications(cv) }}
+    {{ render_skills(cv) }}
+  </main>
+</div>

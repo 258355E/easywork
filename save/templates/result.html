@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Final CV{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+<style>
+  .page-shell { max-width: 1220px; margin: 0 auto; padding: 28px 24px 60px; }
+  .toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+  .toolbar-group { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 16px; border-radius:12px; text-decoration:none; border:none; cursor:pointer; }
+  .btn-primary { background:#111; color:#fff; }
+  .btn-secondary { background:#f3f3f3; color:#111; }
+  .cv-stage { display:flex; justify-content:center; }
+  @media print {
+    .toolbar, .site-header, .site-footer { display:none !important; }
+    .page-shell { padding:0; margin:0; max-width:none; }
+    .cv-stage { display:block; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <a class="btn btn-secondary" href="{{ url_for('documents') }}">My CVs</a>
+      <a class="btn btn-secondary" href="{{ url_for('edit_page', result_id=result_id) }}">Edit</a>
+    </div>
+    <div class="toolbar-group">
+      <button class="btn btn-primary" onclick="window.print()">Download PDF</button>
+    </div>
+  </div>
+
+  <div class="cv-stage template-{{ template }}" style="--accent: {{ theme }};">
+    {% include 'cv/' + template + '.html' %}
+  </div>
+</section>
+{% endblock %}

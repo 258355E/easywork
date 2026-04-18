@@ -1,0 +1,144 @@
+{% macro contact_item(label, value) -%}
+  {% if value %}
+    <div class="contact-item">
+      <span class="contact-dot"></span>
+      <span>{{ value }}</span>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_summary(cv) -%}
+  {% if cv.career_summary %}
+  <section class="resume-section">
+    <div class="resume-section__title">Profile</div>
+    <div class="resume-section__content">
+      <div class="resume-summary">{{ cv.career_summary }}</div>
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_experience(cv) -%}
+  {% if cv.work_experience %}
+  <section class="resume-section">
+    <div class="resume-section__title">Experience</div>
+    <div class="resume-section__content">
+      {% for item in cv.work_experience %}
+      <article class="resume-entry">
+        <div class="entry-head">
+          <div>
+            <div class="entry-title">{{ item.job_title }}</div>
+            <div class="entry-subtitle">
+              {{ item.company }}
+              {% if item.location %} &middot; {{ item.location }}{% endif %}
+            </div>
+          </div>
+          <div class="entry-date">
+            {{ item.start_date }}{% if item.start_date or item.end_date %} - {% endif %}{{ item.end_date }}
+          </div>
+        </div>
+        {% if item.bullets %}
+        <ul class="resume-bullets">
+          {% for bullet in item.bullets %}
+          <li>{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_education(cv) -%}
+  {% if cv.education %}
+  <section class="resume-section">
+    <div class="resume-section__title">Education</div>
+    <div class="resume-section__content">
+      {% for item in cv.education %}
+      <article class="resume-entry">
+        <div class="entry-head">
+          <div>
+            <div class="entry-title">{{ item.degree }}</div>
+            <div class="entry-subtitle">
+              {{ item.institution }}
+              {% if item.location %} &middot; {{ item.location }}{% endif %}
+            </div>
+          </div>
+          <div class="entry-date">{{ item.graduation_date }}</div>
+        </div>
+        {% if item.details %}
+        <ul class="resume-bullets">
+          {% for detail in item.details %}
+          <li>{{ detail }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_certifications(cv) -%}
+  {% if cv.certifications %}
+  <section class="resume-section">
+    <div class="resume-section__title">Certifications</div>
+    <div class="resume-section__content">
+      {% for item in cv.certifications %}
+      <article class="resume-entry">
+        <div class="entry-head">
+          <div>
+            <div class="entry-title">{{ item.name }}</div>
+            <div class="entry-subtitle">{{ item.issuer }}</div>
+          </div>
+          <div class="entry-date">{{ item.date }}</div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_skills(cv) -%}
+  {% set software = cv.skills.software if cv.skills and cv.skills.software else [] %}
+  {% set languages = cv.skills.languages if cv.skills and cv.skills.languages else [] %}
+  {% set other = cv.skills.other if cv.skills and cv.skills.other else [] %}
+
+  {% if software or languages or other %}
+  <section class="resume-section">
+    <div class="resume-section__title">Skills</div>
+    <div class="resume-section__content skills-group">
+      {% if software %}
+      <div>
+        <div class="skills-group__label">Software</div>
+        <div class="skills-group__chips">
+          {% for item in software %}<span class="skill-chip">{{ item }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if languages %}
+      <div>
+        <div class="skills-group__label">Languages</div>
+        <div class="skills-group__chips">
+          {% for item in languages %}<span class="skill-chip">{{ item }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if other %}
+      <div>
+        <div class="skills-group__label">Other</div>
+        <div class="skills-group__chips">
+          {% for item in other %}<span class="skill-chip">{{ item }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}

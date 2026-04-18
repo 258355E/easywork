@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+{% block title %}Final CV{% endblock %}
+{% block body_attrs %}data-paid="{{ '1' if is_paid else '0' }}"{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+<style>
+  .page-shell { max-width: 1400px; margin: 0 auto; padding: 28px 24px 60px; }
+  .workspace-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:20px; flex-wrap:wrap; }
+  .workspace-head h1 { margin: 6px 0 0; }
+  .workspace-head p { margin: 10px 0 0; color: var(--muted); max-width: 760px; }
+  .toolbar-group { display:flex; gap:10px; flex-wrap:wrap; }
+  .workspace-layout { display:grid; grid-template-columns: 320px minmax(0, 1fr); gap: 22px; align-items:start; }
+  .editor-panel {
+    position: sticky;
+    top: 96px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+    padding: 20px;
+  }
+  .panel-title { margin: 0 0 14px; font-size: 18px; }
+  .panel-copy { margin: 0 0 18px; color: var(--muted); line-height: 1.6; font-size: 14px; }
+  .control-group { margin-bottom: 18px; }
+  .control-group label { display:block; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+  .range-row { display:grid; grid-template-columns: 1fr auto; gap: 12px; align-items:center; }
+  .range-row input[type="range"] { width: 100%; }
+  .range-value {
+    min-width: 52px;
+    text-align: center;
+    padding: 7px 9px;
+    border-radius: 999px;
+    background: #faf4df;
+    border: 1px solid #f1dfb1;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-amber);
+  }
+  .hint-box {
+    background: #fcfaf2;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+  .status-line {
+    min-height: 20px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .status-line.saved { color: var(--success); }
+  .status-line.error { color: var(--danger); }
+  .cv-stage-wrap {
+    background: linear-gradient(180deg, #f4f1e7, #eeeadb);
+    border: 1px solid #e1dccd;
+    border-radius: 24px;
+    padding: 22px;
+    overflow: auto;
+  }
+  .cv-stage { display:flex; justify-content:center; min-width: fit-content; }
+  .direct-edit-active [data-bind] {
+    cursor: text;
+    border-radius: 6px;
+    outline: 2px dashed transparent;
+    transition: background .15s ease, outline-color .15s ease;
+  }
+  .direct-edit-active [data-bind]:hover {
+    background: rgba(242, 204, 0, 0.14);
+    outline-color: rgba(186, 117, 23, 0.35);
+  }
+  .direct-edit-active [data-bind]:focus {
+    background: rgba(242, 204, 0, 0.18);
+    outline-color: var(--brand-amber);
+  }
+  .locked-banner {
+    display: none;
+    background: #fff5d6;
+    border: 1px solid #f1d28b;
+    color: #5c3b00;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  body[data-paid="0"] .locked-banner { display: block; }
+  body.protect-blind .cv-stage { filter: blur(18px); pointer-events: none; user-select: none; }
+  .print-blocker {
+    display: none;
+    padding: 28px;
+    border: 1px dashed #ddd;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+  }
+  @media (max-width: 1080px) {
+    .workspace-layout { grid-template-columns: 1fr; }
+    .editor-panel { position: static; }
+  }
+  @media print {
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    .site-header, .site-footer, .workspace-head, .editor-panel, .locked-banner { display:none !important; }
+    .page-shell { padding:0; margin:0; max-width:none; }
+    .cv-stage-wrap { padding:0; background: transparent; border: 0; border-radius: 0; overflow: visible; }
+    .cv-stage { display:block; }
+  }
+</style>
+{% if paywall_enabled and not is_paid %}
+<style>
+  @media print {
+    .cv-stage { display:none !important; }
+    .print-blocker { display:block !important; }
+  }
+</style>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<script type="application/json" id="result-data">
+{
+  "cv": {{ cv | tojson }},
+  "resultId": {{ result_id | tojson }},
+  "template": {{ template | tojson }},
+  "theme": {{ theme | tojson }},
+  "payUrl": {{ (pay_url or '') | tojson }}
+}
+</script>
+
+<section class="page-shell">
+  <div class="locked-banner">
+    <strong>Download is locked.</strong> Please complete payment to download your CV as PDF.
+    <a class="btn btn-primary" style="margin-left:10px;" href="{{ pay_url }}">Unlock</a>
+  </div>
+
+  <div class="workspace-head">
+    <div>
+      <span class="eyebrow">Result editor</span>
+      <h1>Edit your CV directly</h1>
+      <p>Click on the CV text to edit it like a document, then adjust text size and spacing until the layout looks right.</p>
+    </div>
+    <div class="toolbar-group">
+      <a class="btn btn-secondary" href="{{ url_for('documents') }}">My CVs</a>
+      <a class="btn btn-secondary" href="{{ url_for('edit_page', result_id=result_id) }}">Structured Edit</a>
+      <button class="btn btn-secondary" id="toggleEditBtn" type="button">Direct Edit: Off</button>
+      <button class="btn btn-secondary" id="fixLayoutBtn" type="button">Fix Layout</button>
+      <button class="btn btn-primary" id="saveCvBtn" type="button">Save Changes</button>
+      <button class="btn btn-primary" id="downloadPdfBtn" type="button">Download PDF</button>
+    </div>
+  </div>
+
+  <div class="workspace-layout">
+    <aside class="editor-panel">
+      <h2 class="panel-title">Quick Controls</h2>
+      <p class="panel-copy">Use these controls for the small adjustments people usually want in a Word file: tighter spacing, larger text, or a little more breathing room.</p>
+
+      <div class="hint-box">
+        Turn on direct edit, click any highlighted CV text, and type your changes. Save when you are happy with the result.
+      </div>
+
+      <div class="control-group">
+        <label for="fontScale">Text size</label>
+        <div class="range-row">
+          <input id="fontScale" type="range" min="0.90" max="1.12" step="0.01">
+          <span class="range-value" id="fontScaleValue">100%</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="lineSpacing">Line spacing</label>
+        <div class="range-row">
+          <input id="lineSpacing" type="range" min="0.88" max="1.20" step="0.01">
+          <span class="range-value" id="lineSpacingValue">100%</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="spaceScale">Section spacing</label>
+        <div class="range-row">
+          <input id="spaceScale" type="range" min="0.80" max="1.20" step="0.01">
+          <span class="range-value" id="spaceScaleValue">100%</span>
+        </div>
+      </div>
+
+      <div class="toolbar-group">
+        <button class="btn btn-secondary" type="button" id="compactPresetBtn">Compact</button>
+        <button class="btn btn-secondary" type="button" id="normalPresetBtn">Normal</button>
+        <button class="btn btn-secondary" type="button" id="spaciousPresetBtn">Spacious</button>
+      </div>
+
+      <div id="saveStatus" class="status-line">No changes yet.</div>
+    </aside>
+
+    <div class="cv-stage-wrap">
+      <div class="cv-stage template-{{ template }}" id="cvStage" style="--accent: {{ theme }};">
+        {% include 'cv/' + template + '.html' %}
+      </div>
+    </div>
+  </div>
+
+  <div class="print-blocker">
+    This PDF download is locked. Please complete payment, then try again.
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/protect-cv.js') }}" defer></script>
+<script>
+  (function () {
+    const APP = JSON.parse(document.getElementById('result-data').textContent || '{}');
+    const stage = document.getElementById('cvStage');
+    const resumePage = stage ? stage.querySelector('.resume-page') : null;
+    if (!stage || !resumePage) return;
+
+    const state = JSON.parse(JSON.stringify(APP.cv || {}));
+    state.layout = state.layout || {};
+    state.layout.font_scale = Number(state.layout.font_scale || 1);
+    state.layout.line_spacing = Number(state.layout.line_spacing || 1);
+    state.layout.space_scale = Number(state.layout.space_scale || 1);
+
+    let directEditEnabled = false;
+    let dirty = false;
+
+    const saveStatus = document.getElementById('saveStatus');
+    const fontScale = document.getElementById('fontScale');
+    const fontScaleValue = document.getElementById('fontScaleValue');
+    const lineSpacing = document.getElementById('lineSpacing');
+    const lineSpacingValue = document.getElementById('lineSpacingValue');
+    const spaceScale = document.getElementById('spaceScale');
+    const spaceScaleValue = document.getElementById('spaceScaleValue');
+    const toggleEditBtn = document.getElementById('toggleEditBtn');
+
+    function markDirty(message) {
+      dirty = true;
+      saveStatus.textContent = message || 'Unsaved changes';
+      saveStatus.className = 'status-line';
+    }
+
+    function markSaved(message) {
+      dirty = false;
+      saveStatus.textContent = message || 'All changes saved.';
+      saveStatus.className = 'status-line saved';
+    }
+
+    function markError(message) {
+      saveStatus.textContent = message || 'Something went wrong.';
+      saveStatus.className = 'status-line error';
+    }
+
+    function toPercent(value) {
+      return `${Math.round(Number(value) * 100)}%`;
+    }
+
+    function applyLayoutToPage() {
+      resumePage.style.setProperty('--cv-font-scale', String(state.layout.font_scale || 1));
+      resumePage.style.setProperty('--cv-line-scale', String(state.layout.line_spacing || 1));
+      resumePage.style.setProperty('--cv-space-scale', String(state.layout.space_scale || 1));
+      fontScaleValue.textContent = toPercent(state.layout.font_scale);
+      lineSpacingValue.textContent = toPercent(state.layout.line_spacing);
+      spaceScaleValue.textContent = toPercent(state.layout.space_scale);
+    }
+
+    function getByPath(obj, path) {
+      return path.split('.').reduce((acc, key) => acc == null ? undefined : acc[key], obj);
+    }
+
+    function setByPath(obj, path, value) {
+      const parts = path.split('.');
+      let ref = obj;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const key = /^\d+$/.test(parts[i]) ? Number(parts[i]) : parts[i];
+        const nextKey = parts[i + 1];
+        if (ref[key] == null) ref[key] = /^\d+$/.test(nextKey) ? [] : {};
+        ref = ref[key];
+      }
+      const last = /^\d+$/.test(parts[parts.length - 1]) ? Number(parts[parts.length - 1]) : parts[parts.length - 1];
+      if (parts[0] === 'skills' && !Number.isInteger(last)) {
+        ref[last] = String(value).split(',').map((item) => item.trim()).filter(Boolean);
+        return;
+      }
+      ref[last] = value;
+    }
+
+    function syncStageFromState() {
+      stage.querySelectorAll('[data-bind]').forEach((node) => {
+        const value = getByPath(state, node.dataset.bind);
+        if (Array.isArray(value)) {
+          node.textContent = value.join(', ');
+        } else if (value != null) {
+          node.textContent = String(value);
+        }
+      });
+    }
+
+    function onDirectEditInput(event) {
+      const node = event.target;
+      const path = node.dataset.bind;
+      if (!path) return;
+      setByPath(state, path, node.innerText.trim());
+      markDirty('Text updated. Save to keep it.');
+    }
+
+    function enableDirectEdit() {
+      stage.classList.add('direct-edit-active');
+      stage.querySelectorAll('[data-bind]').forEach((node) => {
+        node.setAttribute('contenteditable', 'true');
+        node.addEventListener('input', onDirectEditInput);
+      });
+      toggleEditBtn.textContent = 'Direct Edit: On';
+    }
+
+    function disableDirectEdit() {
+      stage.classList.remove('direct-edit-active');
+      stage.querySelectorAll('[data-bind]').forEach((node) => {
+        node.removeAttribute('contenteditable');
+        node.removeEventListener('input', onDirectEditInput);
+      });
+      toggleEditBtn.textContent = 'Direct Edit: Off';
+    }
+
+    function pxPerMm() {
+      const probe = document.createElement('div');
+      probe.style.width = '100mm';
+      probe.style.position = 'absolute';
+      probe.style.left = '-10000px';
+      probe.style.top = '0';
+      document.body.appendChild(probe);
+      const px = probe.getBoundingClientRect().width / 100;
+      probe.remove();
+      return px || 3.78;
+    }
+
+    function clearPageBreaks() {
+      stage.querySelectorAll('[data-page-break-before="1"]').forEach((node) => {
+        node.removeAttribute('data-page-break-before');
+      });
+    }
+
+    function applySmartBreaks() {
+      const mm = pxPerMm();
+      const pageH = 297 * mm;
+      const threshold = 28 * mm;
+      const pageRect = resumePage.getBoundingClientRect();
+      const sections = stage.querySelectorAll('.resume-section');
+
+      sections.forEach((section) => {
+        if (section.getAttribute('data-section') === 'experience') return;
+        const rect = section.getBoundingClientRect();
+        const top = rect.top - pageRect.top;
+        if (top < 0) return;
+        const pagePos = top % pageH;
+        const sectionHeight = rect.height;
+        if (sectionHeight > pageH * 0.7) return;
+        if (pagePos > (pageH - threshold)) {
+          section.setAttribute('data-page-break-before', '1');
+        }
+      });
+    }
+
+    function estimatePages() {
+      const mm = pxPerMm();
+      const pageH = 297 * mm;
+      return Math.max(1, Math.ceil(resumePage.scrollHeight / pageH));
+    }
+
+    function setDensity(level) {
+      stage.classList.remove('layout-density-0', 'layout-density-1', 'layout-density-2');
+      stage.classList.add(`layout-density-${level}`);
+    }
+
+    function fixLayoutAuto() {
+      let best = { level: 0, pages: Infinity };
+      for (const level of [0, 1, 2]) {
+        setDensity(level);
+        clearPageBreaks();
+        resumePage.offsetHeight;
+        applySmartBreaks();
+        resumePage.offsetHeight;
+        const pages = estimatePages();
+        if (pages < best.pages) best = { level, pages };
+      }
+      setDensity(best.level);
+      clearPageBreaks();
+      resumePage.offsetHeight;
+      applySmartBreaks();
+      markDirty('Layout adjusted. Save to keep it.');
+    }
+
+    async function saveChanges() {
+      try {
+        const res = await fetch(`/api/result/${APP.resultId}/update`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            resume_data: state,
+            saved_template: APP.template,
+            theme_color: APP.theme
+          })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Save failed.');
+        markSaved('Changes saved.');
+      } catch (error) {
+        markError(error.message || 'Could not save.');
+      }
+    }
+
+    fontScale.value = String(state.layout.font_scale);
+    lineSpacing.value = String(state.layout.line_spacing);
+    spaceScale.value = String(state.layout.space_scale);
+    applyLayoutToPage();
+    syncStageFromState();
+    markSaved('Ready to edit.');
+
+    fontScale.addEventListener('input', () => {
+      state.layout.font_scale = Number(fontScale.value);
+      applyLayoutToPage();
+      markDirty('Text size changed. Save to keep it.');
+    });
+
+    lineSpacing.addEventListener('input', () => {
+      state.layout.line_spacing = Number(lineSpacing.value);
+      applyLayoutToPage();
+      markDirty('Line spacing changed. Save to keep it.');
+    });
+
+    spaceScale.addEventListener('input', () => {
+      state.layout.space_scale = Number(spaceScale.value);
+      applyLayoutToPage();
+      markDirty('Section spacing changed. Save to keep it.');
+    });
+
+    document.getElementById('compactPresetBtn').addEventListener('click', () => {
+      state.layout.font_scale = 0.97;
+      state.layout.line_spacing = 0.95;
+      state.layout.space_scale = 0.9;
+      fontScale.value = String(state.layout.font_scale);
+      lineSpacing.value = String(state.layout.line_spacing);
+      spaceScale.value = String(state.layout.space_scale);
+      applyLayoutToPage();
+      markDirty('Compact preset applied.');
+    });
+
+    document.getElementById('normalPresetBtn').addEventListener('click', () => {
+      state.layout.font_scale = 1;
+      state.layout.line_spacing = 1;
+      state.layout.space_scale = 1;
+      fontScale.value = '1';
+      lineSpacing.value = '1';
+      spaceScale.value = '1';
+      applyLayoutToPage();
+      markDirty('Normal preset applied.');
+    });
+
+    document.getElementById('spaciousPresetBtn').addEventListener('click', () => {
+      state.layout.font_scale = 1.03;
+      state.layout.line_spacing = 1.06;
+      state.layout.space_scale = 1.08;
+      fontScale.value = String(state.layout.font_scale);
+      lineSpacing.value = String(state.layout.line_spacing);
+      spaceScale.value = String(state.layout.space_scale);
+      applyLayoutToPage();
+      markDirty('Spacious preset applied.');
+    });
+
+    toggleEditBtn.addEventListener('click', () => {
+      directEditEnabled = !directEditEnabled;
+      if (directEditEnabled) {
+        enableDirectEdit();
+      } else {
+        disableDirectEdit();
+      }
+    });
+
+    document.getElementById('fixLayoutBtn').addEventListener('click', fixLayoutAuto);
+    document.getElementById('saveCvBtn').addEventListener('click', saveChanges);
+
+    document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+      const paid = document.body.dataset.paid === '1';
+      if (!paid) {
+        window.location.href = APP.payUrl;
+        return;
+      }
+      if (dirty) {
+        await saveChanges();
+      }
+      fixLayoutAuto();
+      window.print();
+    });
+
+    window.addEventListener('beforeprint', () => {
+      const paid = document.body.dataset.paid === '1';
+      if (!paid) {
+        document.body.classList.add('protect-blind');
+        return;
+      }
+      fixLayoutAuto();
+    });
+  })();
+</script>
+{% endblock %}

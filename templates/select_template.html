@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+{% block title %}Choose Your CV Template{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+
+<style>
+  :root {
+    --accent: {{ theme or '#ba7517' }};
+    --bg: #f4f2ee;
+    --card-bg: #ffffff;
+    --border: #e5e2db;
+    --text: #1a1a1a;
+    --muted: #777;
+    --shadow: 0 8px 30px rgba(0,0,0,0.08);
+    --shadow-hover: 0 14px 40px rgba(0,0,0,0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--bg);
+  }
+
+  .template-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 24px 72px;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(30px, 4vw, 46px);
+    line-height: 1.1;
+    color: var(--text);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    margin: 0 auto;
+    max-width: 760px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .filter-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 2px;
+  }
+
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
+  }
+
+  .color-swatch:hover {
+    transform: scale(1.12);
+  }
+
+  .color-swatch.active {
+    border-color: #111;
+    transform: scale(1.12);
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+  }
+
+  .selection-note {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .template-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+
+  .template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .template-card.selected {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 3px rgba(0,0,0,0.04),
+      var(--shadow-hover);
+  }
+
+  .preview-shell {
+    position: relative;
+    height: 430px;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #faf8f2, #f5f1e7);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(17,17,17,0.84);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .preview-stage {
+    position: absolute;
+    inset: 0;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .preview-scale {
+    transform-origin: top left;
+    transform: scale(0.33);
+    width: 303%;
+    min-height: 100%;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+  }
+
+  .template-meta {
+    min-width: 0;
+  }
+
+  .template-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    text-transform: capitalize;
+  }
+
+  .template-desc {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .choose-btn {
+    border: none;
+    background: #111;
+    color: #fff;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .choose-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.96;
+  }
+
+  .bottom-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 34px;
+  }
+
+  .continue-btn {
+    border: none;
+    background: #111;
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px 26px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .continue-btn:hover {
+    opacity: 0.95;
+  }
+
+  @media (max-width: 768px) {
+    .template-page {
+      padding: 20px 16px 56px;
+    }
+
+    .preview-shell {
+      height: 360px;
+    }
+
+    .preview-scale {
+      transform: scale(0.28);
+      width: 357%;
+    }
+
+    .card-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .choose-btn {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="template-page">
+  <div class="hero">
+    <h1>Choose your template</h1>
+    <p>
+      Pick your preferred layout, including extra ATS-friendly options, and preview it with your selected accent color.
+    </p>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Color</span>
+
+    <button class="color-swatch {% if theme == '#1a1a1a' %}active{% endif %}" style="background:#1a1a1a;" data-color="#1a1a1a" title="Charcoal" type="button"></button>
+    <button class="color-swatch {% if theme == '#c0392b' %}active{% endif %}" style="background:#c0392b;" data-color="#c0392b" title="Red" type="button"></button>
+    <button class="color-swatch {% if theme == '#2980b9' %}active{% endif %}" style="background:#2980b9;" data-color="#2980b9" title="Blue" type="button"></button>
+    <button class="color-swatch {% if theme == '#16a085' %}active{% endif %}" style="background:#16a085;" data-color="#16a085" title="Teal" type="button"></button>
+    <button class="color-swatch {% if theme == '#8e44ad' %}active{% endif %}" style="background:#8e44ad;" data-color="#8e44ad" title="Purple" type="button"></button>
+    <button class="color-swatch {% if theme == '#d35400' %}active{% endif %}" style="background:#d35400;" data-color="#d35400" title="Orange" type="button"></button>
+    <button class="color-swatch {% if theme == '#27ae60' %}active{% endif %}" style="background:#27ae60;" data-color="#27ae60" title="Green" type="button"></button>
+  </div>
+
+  <div class="selection-note">
+    Current selection:
+    <strong id="currentTemplateLabel">{{ template }}</strong>
+    ·
+    <strong id="currentColorLabel">{{ theme }}</strong>
+  </div>
+
+  {% set templates = [
+    ('classic', 'Balanced and professional'),
+    ('atsclean', 'Extra ATS-friendly with a plain, recruiter-safe layout'),
+    ('atscompact', 'ATS-friendly and space-efficient for longer experience'),
+    ('minimal', 'Refined minimal layout with clean hierarchy'),
+    ('hybrid', 'Modern recruiter-style split layout with strong structure'),
+    ('impact', 'Polished presentation that gives achievements more presence'),
+    ('modern', 'Bold top section with a clean layout'),
+    ('sidebar', 'Strong left accent panel'),
+    ('twocol', 'Compact two-column structure'),
+    ('executive', 'Formal and polished presentation'),
+    ('creative', 'Stronger visual personality')
+  ] %}
+
+  <div class="template-grid" id="templateGrid">
+    {% for tpl, desc in templates %}
+    <div class="template-card {% if tpl == template %}selected{% endif %}" data-template="{{ tpl }}">
+      <div class="preview-shell">
+        {% if tpl == template %}
+          <span class="preview-badge">Selected</span>
+        {% endif %}
+
+        <div class="preview-stage">
+          <div
+            class="preview-scale template-preview-root template-{{ tpl }}"
+            data-preview-template="{{ tpl }}"
+            style="--accent: {{ theme }};"
+          >
+            {% with template=tpl %}
+              {% include 'cv/' + tpl + '.html' %}
+            {% endwith %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="template-meta">
+          <h3 class="template-name">{{ tpl }}</h3>
+          <p class="template-desc">{{ desc }}</p>
+        </div>
+
+        <button class="choose-btn" type="button" onclick="chooseTemplate('{{ tpl }}')">
+          Choose
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="bottom-actions">
+    <button class="continue-btn" type="button" onclick="continueWithSelected()">
+      Continue with selected template
+    </button>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script id="select-template-state" type="application/json">
+  {{ {
+    "selectedTemplate": template,
+    "selectedColor": theme,
+    "resultId": result_id
+  } | tojson }}
+</script>
+<script>
+  const pageState = JSON.parse(document.getElementById('select-template-state').textContent);
+  let selectedTemplate = pageState.selectedTemplate;
+  let selectedColor = pageState.selectedColor;
+  const resultId = pageState.resultId;
+
+  function updateSelectedLabels() {
+    const templateLabel = document.getElementById('currentTemplateLabel');
+    const colorLabel = document.getElementById('currentColorLabel');
+
+    if (templateLabel) templateLabel.textContent = selectedTemplate;
+    if (colorLabel) colorLabel.textContent = selectedColor;
+  }
+
+  function updatePreviewAccent(color) {
+    document.documentElement.style.setProperty('--accent', color);
+
+    document.querySelectorAll('.template-preview-root').forEach((node) => {
+      node.style.setProperty('--accent', color);
+    });
+  }
+
+  function updateSwatches(color) {
+    document.querySelectorAll('.color-swatch').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.color === color);
+    });
+  }
+
+  function updateSelectedCard(templateName) {
+    document.querySelectorAll('.template-card').forEach((card) => {
+      const isSelected = card.dataset.template === templateName;
+      card.classList.toggle('selected', isSelected);
+
+      let badge = card.querySelector('.preview-badge');
+      if (isSelected) {
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'preview-badge';
+          badge.textContent = 'Selected';
+          card.querySelector('.preview-shell').appendChild(badge);
+        }
+      } else {
+        if (badge) badge.remove();
+      }
+    });
+  }
+
+  function applyPreviewColor(color) {
+    selectedColor = color;
+    updateSwatches(color);
+    updatePreviewAccent(color);
+    updateSelectedLabels();
+  }
+
+  function chooseTemplate(templateName) {
+    selectedTemplate = templateName;
+    updateSelectedCard(templateName);
+    updateSelectedLabels();
+    continueWithSelected();
+  }
+
+  function continueWithSelected() {
+    const cleanColor = selectedColor.replace('#', '');
+    window.location.href = `/edit/${resultId}?template=${encodeURIComponent(selectedTemplate)}&color=${encodeURIComponent(cleanColor)}`;
+  }
+
+  document.querySelectorAll('.color-swatch').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      applyPreviewColor(btn.dataset.color);
+    });
+  });
+
+  updateSwatches(selectedColor);
+  updatePreviewAccent(selectedColor);
+  updateSelectedCard(selectedTemplate);
+  updateSelectedLabels();
+</script>
+{% endblock %}

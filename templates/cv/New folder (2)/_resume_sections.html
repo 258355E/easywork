@@ -1,0 +1,146 @@
+{% macro contact_item(label, value) -%}
+  {% if value %}
+    <div class="contact-item" data-contact="{{ label }}">
+      <span class="contact-dot"></span>
+      <span data-bind="contact.{{ label }}">{{ value }}</span>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_summary(cv) -%}
+  {% if cv.career_summary %}
+  <section class="resume-section" data-section="summary">
+    <div class="resume-section__title">Professional Summary</div>
+    <div class="resume-section__content">
+      <div class="resume-summary" data-bind="career_summary">{{ cv.career_summary }}</div>
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_experience(cv) -%}
+  {% if cv.work_experience %}
+  <section class="resume-section" data-section="experience">
+    <div class="resume-section__title">Work Experience</div>
+    <div class="resume-section__content">
+      {% for item in cv.work_experience %}
+      {% set exp_idx = loop.index0 %}
+      <article class="resume-entry" data-exp-index="{{ exp_idx }}">
+        <div class="entry-head">
+          <div>
+            <div class="entry-title" data-bind="work_experience.{{ exp_idx }}.job_title">{{ item.job_title }}</div>
+            <div class="entry-subtitle">
+              <span data-bind="work_experience.{{ exp_idx }}.company">{{ item.company }}</span>
+              {% if item.location %}
+                <span> · </span>
+                <span data-bind="work_experience.{{ exp_idx }}.location">{{ item.location }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="entry-date">
+            <span data-bind="work_experience.{{ exp_idx }}.start_date">{{ item.start_date }}</span>{% if item.start_date or item.end_date %} - {% endif %}<span data-bind="work_experience.{{ exp_idx }}.end_date">{{ item.end_date }}</span>
+          </div>
+        </div>
+        {% if item.bullets %}
+        <ul class="resume-bullets">
+          {% for bullet in item.bullets %}
+          <li data-bind="work_experience.{{ exp_idx }}.bullets.{{ loop.index0 }}">{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_education(cv) -%}
+  {% if cv.education %}
+  <section class="resume-section" data-section="education">
+    <div class="resume-section__title">Education</div>
+    <div class="resume-section__content">
+      {% for item in cv.education %}
+      {% set edu_idx = loop.index0 %}
+      <article class="resume-entry" data-edu-index="{{ edu_idx }}">
+        <div class="entry-head">
+          <div>
+            <div class="entry-title" data-bind="education.{{ edu_idx }}.degree">{{ item.degree }}</div>
+            <div class="entry-subtitle">
+              <span data-bind="education.{{ edu_idx }}.institution">{{ item.institution }}</span>
+              {% if item.location %}
+                <span> · </span>
+                <span data-bind="education.{{ edu_idx }}.location">{{ item.location }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="entry-date" data-bind="education.{{ edu_idx }}.graduation_date">{{ item.graduation_date }}</div>
+        </div>
+        {% if item.details %}
+        <ul class="resume-bullets">
+          {% for detail in item.details %}
+          <li data-bind="education.{{ edu_idx }}.details.{{ loop.index0 }}">{{ detail }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_certifications(cv) -%}
+  {% if cv.certifications %}
+  <section class="resume-section" data-section="certifications">
+    <div class="resume-section__title">Certifications</div>
+    <div class="resume-section__content">
+      {% for item in cv.certifications %}
+      <article class="resume-entry" data-cert-index="{{ loop.index0 }}">
+        <div class="entry-head">
+          <div>
+            <div class="entry-title" data-bind="certifications.{{ loop.index0 }}.name">{{ item.name }}</div>
+            <div class="entry-subtitle" data-bind="certifications.{{ loop.index0 }}.issuer">{{ item.issuer }}</div>
+          </div>
+          <div class="entry-date" data-bind="certifications.{{ loop.index0 }}.date">{{ item.date }}</div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_skills(cv) -%}
+  {% set software = cv.skills.software if cv.skills and cv.skills.software else [] %}
+  {% set languages = cv.skills.languages if cv.skills and cv.skills.languages else [] %}
+  {% set other = cv.skills.other if cv.skills and cv.skills.other else [] %}
+
+  {% if software or languages or other %}
+  <section class="resume-section" data-section="skills">
+    <div class="resume-section__title">Skills</div>
+    <div class="resume-section__content skills-group">
+      {% if software %}
+      <div>
+        <div class="skills-group__label">Software</div>
+        <div data-bind="skills.software">{{ software | join(', ') }}</div>
+      </div>
+      {% endif %}
+
+      {% if languages %}
+      <div>
+        <div class="skills-group__label">Languages</div>
+        <div data-bind="skills.languages">{{ languages | join(', ') }}</div>
+      </div>
+      {% endif %}
+
+      {% if other %}
+      <div>
+        <div class="skills-group__label">Other</div>
+        <div data-bind="skills.other">{{ other | join(', ') }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}

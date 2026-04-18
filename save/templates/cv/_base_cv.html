@@ -1,0 +1,26 @@
+{% from "cv/_resume_sections.html" import contact_item, render_summary, render_experience, render_education, render_certifications, render_skills %}
+
+<div class="resume-page template-{{ template }}" style="--accent: {{ theme }};">
+  <div class="resume-page__inner">
+    <header class="resume-header">
+      <div>
+        <div class="resume-name">{{ cv.full_name or "Your Name" }}</div>
+        {% if cv.headline %}<div class="resume-headline">{{ cv.headline }}</div>{% endif %}
+      </div>
+      <div class="resume-contact">
+        {{ contact_item("phone", cv.contact.phone) }}
+        {{ contact_item("email", cv.contact.email) }}
+        {{ contact_item("linkedin", cv.contact.linkedin) }}
+        {{ contact_item("address", cv.contact.address) }}
+      </div>
+    </header>
+
+    <main class="resume-body">
+      {{ render_summary(cv) }}
+      {{ render_experience(cv) }}
+      {{ render_education(cv) }}
+      {{ render_certifications(cv) }}
+      {{ render_skills(cv) }}
+    </main>
+  </div>
+</div>

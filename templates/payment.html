@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Payment{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 34px 0 60px;">
+  <div style="max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-md); padding: 22px;">
+    <h1 style="margin: 6px 0 10px; font-size: 28px;">Unlock PDF Download</h1>
+    <p style="margin: 0 0 18px; color: var(--muted); line-height: 1.6;">
+      Complete payment to download your CV as a PDF.
+    </p>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; gap: 12px; flex-wrap: wrap; padding: 14px 16px; border-radius: 14px; background: #faf7ef; border: 1px solid var(--line); margin-bottom: 18px;">
+      <div>
+        <div style="font-weight: 800; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: #6b6b6b;">Price</div>
+        <div style="font-weight: 900; font-size: 22px; color: #111;">{{ price_label }}</div>
+      </div>
+      <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{{ return_url }}" style="display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 16px; border-radius:12px; text-decoration:none; border: 1px solid var(--line); background:#fff;">Back</a>
+        {% if payment_redirect_url %}
+          <a href="{{ payment_redirect_url }}?result_id={{ result_id }}&return_url={{ return_url|urlencode }}" style="display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 16px; border-radius:12px; text-decoration:none; border:none; background:#111; color:#fff; font-weight: 700;">
+            Continue to Payment
+          </a>
+        {% elif allow_test_payments %}
+          <form method="post" action="{{ url_for('pay_complete', result_id=result_id) }}" style="margin:0;">
+            <button type="submit" style="display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 16px; border-radius:12px; border:none; background:#111; color:#fff; cursor:pointer; font-weight: 700;">
+              Mark as Paid (Test)
+            </button>
+          </form>
+        {% else %}
+          <span style="color: #b42318; font-weight: 700;">Payment is not configured.</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <p style="margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6;">
+      Note: Disabling right-click/DevTools in the browser is only a deterrent. Real protection is enforced by server-side access control and locking print/PDF until payment.
+    </p>
+  </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,1159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your CV Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f4f2ee;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e2db;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .header-logo span { color: #c0392b; }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .header-user img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            text-align: center;
+            padding: 56px 20px 40px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.2;
+            margin-bottom: 14px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: #c0392b;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: #666;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ── Color filter bar ── */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px 36px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-right: 4px;
+        }
+
+        .color-swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+            outline: none;
+        }
+
+        .color-swatch:hover { transform: scale(1.15); }
+        .color-swatch.active { border-color: #1a1a1a; transform: scale(1.15); }
+
+        /* ── Template grid ── */
+        .grid-label {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 32px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 32px 80px;
+        }
+
+        /* ── Template card ── */
+        .template-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .template-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            transform: translateY(-4px);
+        }
+
+        .template-card.selected {
+            box-shadow: 0 0 0 3px #c0392b, 0 8px 32px rgba(192,57,43,0.15);
+        }
+
+        /* Preview area — mini CV mockup */
+        .card-preview {
+            height: 340px;
+            overflow: hidden;
+            position: relative;
+            background: #fafafa;
+        }
+
+        /* Recommended badge */
+        .badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.04em;
+            z-index: 2;
+        }
+
+        /* ── Choose button ── */
+        .card-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #f0ede8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .template-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .choose-btn {
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .choose-btn:hover { background: #a93226; transform: scale(1.03); }
+
+        /* ══════════════════════════════════════════
+           Mini CV Mockups (pure CSS/HTML previews)
+        ══════════════════════════════════════════ */
+
+        /* --- Template 1: Classic --- */
+        .mock { padding: 20px 18px; font-size: 0; }
+        .mock-line { display: block; border-radius: 2px; margin-bottom: 5px; }
+        .mock-h1  { height: 10px; width: 55%; background: #1a1a1a; margin-bottom: 6px; }
+        .mock-sub { height: 6px; width: 38%; background: #bbb; margin-bottom: 10px; }
+        .mock-divider { height: 1.5px; width: 100%; background: #e0ddd8; margin-bottom: 10px; }
+        .mock-label { height: 7px; width: 30%; background: #888; margin-bottom: 7px; }
+        .mock-text  { height: 5px; background: #ddd; margin-bottom: 4px; }
+        .mock-text.w90 { width: 90%; }
+        .mock-text.w75 { width: 75%; }
+        .mock-text.w60 { width: 60%; }
+        .mock-text.w45 { width: 45%; }
+        .mock-text.w30 { width: 30%; }
+
+        /* --- Template 2: Modern Dark Header --- */
+        .mock-t2-header {
+            background: #1a1a1a;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+        .mock-t2-name { height: 10px; width: 50%; background: #fff; border-radius: 2px; margin-bottom: 6px; }
+        .mock-t2-sub  { height: 6px;  width: 35%; background: #888; border-radius: 2px; }
+        .mock-t2-body { padding: 0 18px; }
+
+        /* --- Template 3: Sidebar --- */
+        .mock-t3 { display: flex; height: 100%; }
+        .mock-t3-left  { width: 36%; background: var(--accent, #2c3e50); padding: 16px 10px; flex-shrink: 0; }
+        .mock-t3-right { flex: 1; padding: 16px 12px; }
+        .mock-t3-avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.25); margin: 0 auto 10px; }
+        .mock-t3-wname { height: 8px; width: 70%; background: rgba(255,255,255,0.85); border-radius: 2px; margin: 0 auto 5px; }
+        .mock-t3-wsub  { height: 5px; width: 50%; background: rgba(255,255,255,0.45); border-radius: 2px; margin: 0 auto 12px; }
+
+        /* --- Template 4: Minimal Two-Column --- */
+        .mock-t4 { display: flex; gap: 0; height: 100%; }
+        .mock-t4-left  { width: 38%; border-right: 2px solid #eee; padding: 20px 12px; }
+        .mock-t4-right { flex: 1; padding: 20px 12px; }
+
+        /* --- Template 5: Executive --- */
+        .mock-t5-accent { height: 6px; width: 100%; background: var(--accent, #c0392b); }
+        .mock-t5-top    { padding: 16px 18px 10px; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .mock-t5-body   { padding: 0 18px; }
+
+        /* --- Template 6: Creative Bold --- */
+        .mock-t6-left { width: 42%; background: var(--accent, #16a085); padding: 20px 12px; }
+        .mock-t6-right { flex: 1; padding: 20px 12px; background: #fff; }
+        .mock-t6 { display: flex; height: 100%; }
+        .mock-t6-big { height: 14px; width: 80%; background: rgba(255,255,255,0.9); border-radius: 3px; margin-bottom: 8px; }
+        .mock-t6-med { height: 7px; background: rgba(255,255,255,0.5); border-radius: 2px; margin-bottom: 5px; }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(244,242,238,0.92);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .loading-overlay.active { display: flex; }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid #e0ddd8;
+            border-top-color: #c0392b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+
+        .loading-sub {
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-logo">CV<span>.</span>AI</div>
+        {% if user %}
+        <div class="header-user">
+            {% if user.picture %}
+                <img src="{{ user.picture }}" alt="{{ user.name }}" referrerpolicy="no-referrer">
+            {% endif %}
+            <span>{{ user.name }}</span>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Choose your <em>template</em></h1>
+        <p>Your CV has been optimised. Now pick a design that gets you hired.</p>
+    </div>
+
+    <!-- Color filter -->
+    <div class="filter-bar">
+        <span class="filter-label">Color</span>
+        <button class="color-swatch active" style="background:#1a1a1a;" data-color="#1a1a1a" title="Charcoal"></button>
+        <button class="color-swatch" style="background:#c0392b;" data-color="#c0392b" title="Red"></button>
+        <button class="color-swatch" style="background:#2980b9;" data-color="#2980b9" title="Blue"></button>
+        <button class="color-swatch" style="background:#16a085;" data-color="#16a085" title="Teal"></button>
+        <button class="color-swatch" style="background:#8e44ad;" data-color="#8e44ad" title="Purple"></button>
+        <button class="color-swatch" style="background:#d35400;" data-color="#d35400" title="Orange"></button>
+        <button class="color-swatch" style="background:#27ae60;" data-color="#27ae60" title="Green"></button>
+    </div>
+
+    <div class="grid-label">All templates (6)</div>
+
+    <!-- Template Grid -->
+    <div class="template-grid" id="templateGrid">
+
+        <!-- ─── Template 1: Classic ─── -->
+        <div class="template-card" data-template="classic">
+            <div class="card-preview">
+                <span class="badge">Recommended</span>
+                <div class="mock" style="padding:24px 20px;">
+                    <span class="mock-line mock-h1"></span>
+                    <span class="mock-line mock-sub"></span>
+                    <span class="mock-line" style="height:5px;width:80%;background:#bbb;display:block;margin-bottom:12px;border-radius:2px;"></span>
+                    <span class="mock-line mock-divider"></span>
+                    <span class="mock-line mock-label"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w60"></span>
+                    <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                    <span class="mock-line mock-label"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w45"></span>
+                    <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                    <span class="mock-line mock-label"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w60"></span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Classic</span>
+                <button class="choose-btn" onclick="chooseTemplate('classic')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 2: Modern Dark Header ─── -->
+        <div class="template-card" data-template="modern">
+            <div class="card-preview">
+                <span class="badge">Recommended</span>
+                <div class="mock-t2-header">
+                    <div class="mock-t2-name"></div>
+                    <div class="mock-t2-sub"></div>
+                    <div style="height:5px;width:60%;background:rgba(255,255,255,0.3);border-radius:2px;margin-top:5px;"></div>
+                </div>
+                <div class="mock-t2-body">
+                    <span class="mock-line mock-label" style="background:var(--accent,#1a1a1a);width:25%;"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w60"></span>
+                    <span class="mock-line mock-divider" style="margin-top:10px;"></span>
+                    <span class="mock-line mock-label" style="background:var(--accent,#1a1a1a);width:25%;"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w60"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w45"></span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Modern</span>
+                <button class="choose-btn" onclick="chooseTemplate('modern')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 3: Sidebar ─── -->
+        <div class="template-card" data-template="sidebar">
+            <div class="card-preview" style="padding:0;">
+                <div class="mock-t3">
+                    <div class="mock-t3-left" style="background:var(--accent,#2c3e50);">
+                        <div class="mock-t3-avatar"></div>
+                        <div class="mock-t3-wname"></div>
+                        <div class="mock-t3-wsub"></div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:10px;"></div>
+                        <div style="height:6px;width:60%;background:rgba(255,255,255,0.6);border-radius:2px;margin-bottom:6px;"></div>
+                        <div style="height:5px;width:80%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:55%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:14px;"></div>
+                        <div style="height:6px;width:60%;background:rgba(255,255,255,0.6);border-radius:2px;margin-bottom:6px;"></div>
+                        <div style="height:5px;width:80%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:65%;background:rgba(255,255,255,0.3);border-radius:2px;"></div>
+                    </div>
+                    <div class="mock-t3-right">
+                        <span class="mock-line mock-label" style="background:var(--accent,#2c3e50);width:40%;margin-bottom:8px;"></span>
+                        <span class="mock-line mock-text w90"></span>
+                        <span class="mock-line mock-text w75"></span>
+                        <span class="mock-line mock-text w60"></span>
+                        <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                        <span class="mock-line mock-label" style="background:var(--accent,#2c3e50);width:40%;margin-bottom:8px;"></span>
+                        <span class="mock-line mock-text w90"></span>
+                        <span class="mock-line mock-text w75"></span>
+                        <span class="mock-line mock-text w45"></span>
+                        <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                        <span class="mock-line mock-label" style="background:var(--accent,#2c3e50);width:40%;margin-bottom:8px;"></span>
+                        <span class="mock-line mock-text w90"></span>
+                        <span class="mock-line mock-text w60"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Sidebar</span>
+                <button class="choose-btn" onclick="chooseTemplate('sidebar')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 4: Minimal Two-Column ─── -->
+        <div class="template-card" data-template="twocol">
+            <div class="card-preview" style="padding:0;">
+                <div class="mock-t4">
+                    <div class="mock-t4-left">
+                        <div style="height:10px;width:75%;background:#1a1a1a;border-radius:2px;margin-bottom:6px;"></div>
+                        <div style="height:6px;width:55%;background:#bbb;border-radius:2px;margin-bottom:14px;"></div>
+                        <div style="height:6px;width:60%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:60%;background:#ddd;border-radius:2px;margin-bottom:14px;"></div>
+                        <div style="height:6px;width:60%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:65%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:75%;background:#ddd;border-radius:2px;"></div>
+                    </div>
+                    <div class="mock-t4-right">
+                        <div style="height:6px;width:50%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:75%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:6px;width:50%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:6px;width:50%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:60%;background:#ddd;border-radius:2px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Two Column</span>
+                <button class="choose-btn" onclick="chooseTemplate('twocol')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 5: Executive ─── -->
+        <div class="template-card" data-template="executive">
+            <div class="card-preview">
+                <div class="mock-t5-accent" style="background:var(--accent,#c0392b);"></div>
+                <div class="mock-t5-top">
+                    <div style="height:12px;width:55%;background:#1a1a1a;border-radius:2px;margin-bottom:6px;"></div>
+                    <div style="height:6px;width:40%;background:#bbb;border-radius:2px;margin-bottom:5px;"></div>
+                    <div style="height:5px;width:65%;background:#ddd;border-radius:2px;"></div>
+                </div>
+                <div class="mock-t5-body">
+                    <div style="height:7px;width:28%;background:var(--accent,#c0392b);border-radius:2px;margin-bottom:8px;"></div>
+                    <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:75%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:60%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                    <div style="height:7px;width:28%;background:var(--accent,#c0392b);border-radius:2px;margin-bottom:8px;"></div>
+                    <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:55%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                    <div style="height:7px;width:28%;background:var(--accent,#c0392b);border-radius:2px;margin-bottom:8px;"></div>
+                    <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:65%;background:#ddd;border-radius:2px;"></div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Executive</span>
+                <button class="choose-btn" onclick="chooseTemplate('executive')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 6: Creative Bold ─── -->
+        <div class="template-card" data-template="creative">
+            <div class="card-preview" style="padding:0;">
+                <div class="mock-t6">
+                    <div class="mock-t6-left" style="background:var(--accent,#16a085);">
+                        <div class="mock-t6-big"></div>
+                        <div style="height:7px;width:60%;background:rgba(255,255,255,0.5);border-radius:2px;margin-bottom:18px;"></div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:12px;"></div>
+                        <div class="mock-t6-med" style="width:70%;"></div>
+                        <div class="mock-t6-med" style="width:80%;"></div>
+                        <div class="mock-t6-med" style="width:60%;margin-bottom:14px;"></div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:12px;"></div>
+                        <div class="mock-t6-med" style="width:75%;"></div>
+                        <div class="mock-t6-med" style="width:55%;"></div>
+                        <div class="mock-t6-med" style="width:65%;"></div>
+                    </div>
+                    <div class="mock-t6-right">
+                        <div style="height:8px;width:50%;background:var(--accent,#16a085);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:75%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:8px;width:50%;background:var(--accent,#16a085);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:8px;width:50%;background:var(--accent,#16a085);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:60%;background:#ddd;border-radius:2px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Creative</span>
+                <button class="choose-btn" onclick="chooseTemplate('creative')">Choose</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Building your CV…</div>
+        <div class="loading-sub">Just a moment</div>
+    </div>
+
+    <script>
+        const resultId   = "{{ result_id }}";
+        let selectedColor = "#1a1a1a";
+
+        // ── Color swatch selection ──
+        document.querySelectorAll('.color-swatch').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedColor = btn.dataset.color;
+                document.documentElement.style.setProperty('--accent', selectedColor);
+                // update all mock accent references
+                document.querySelectorAll('[style*="var(--accent"]').forEach(el => {
+                    // CSS var updates automatically via the root variable
+                });
+            });
+        });
+
+        // ── Card click selects it ──
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.classList.contains('choose-btn')) return;
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+        });
+
+        // ── Choose template → navigate to result ──
+        function chooseTemplate(templateName) {
+            document.getElementById('loadingOverlay').classList.add('active');
+            const url = `/result/${resultId}?template=${templateName}&color=${encodeURIComponent(selectedColor)}`;
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your CV Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f4f2ee;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e2db;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .header-logo span { color: #c0392b; }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .header-user img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            text-align: center;
+            padding: 56px 20px 40px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.2;
+            margin-bottom: 14px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: #c0392b;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: #666;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ── Color filter bar ── */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px 36px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-right: 4px;
+        }
+
+        .color-swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+            outline: none;
+        }
+
+        .color-swatch:hover { transform: scale(1.15); }
+        .color-swatch.active { border-color: #1a1a1a; transform: scale(1.15); }
+
+        /* ── Template grid ── */
+        .grid-label {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 32px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 32px 80px;
+        }
+
+        /* ── Template card ── */
+        .template-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .template-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            transform: translateY(-4px);
+        }
+
+        .template-card.selected {
+            box-shadow: 0 0 0 3px #c0392b, 0 8px 32px rgba(192,57,43,0.15);
+        }
+
+        /* Preview area — mini CV mockup */
+        .card-preview {
+            height: 340px;
+            overflow: hidden;
+            position: relative;
+            background: #fafafa;
+        }
+
+        /* Recommended badge */
+        .badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.04em;
+            z-index: 2;
+        }
+
+        /* ── Choose button ── */
+        .card-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #f0ede8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .template-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .choose-btn {
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .choose-btn:hover { background: #a93226; transform: scale(1.03); }
+
+        /* ══════════════════════════════════════════
+           Mini CV Mockups (pure CSS/HTML previews)
+        ══════════════════════════════════════════ */
+
+        /* --- Template 1: Classic --- */
+        .mock { padding: 20px 18px; font-size: 0; }
+        .mock-line { display: block; border-radius: 2px; margin-bottom: 5px; }
+        .mock-h1  { height: 10px; width: 55%; background: #1a1a1a; margin-bottom: 6px; }
+        .mock-sub { height: 6px; width: 38%; background: #bbb; margin-bottom: 10px; }
+        .mock-divider { height: 1.5px; width: 100%; background: #e0ddd8; margin-bottom: 10px; }
+        .mock-label { height: 7px; width: 30%; background: #888; margin-bottom: 7px; }
+        .mock-text  { height: 5px; background: #ddd; margin-bottom: 4px; }
+        .mock-text.w90 { width: 90%; }
+        .mock-text.w75 { width: 75%; }
+        .mock-text.w60 { width: 60%; }
+        .mock-text.w45 { width: 45%; }
+        .mock-text.w30 { width: 30%; }
+
+        /* --- Template 2: Modern Dark Header --- */
+        .mock-t2-header {
+            background: #1a1a1a;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+        .mock-t2-name { height: 10px; width: 50%; background: #fff; border-radius: 2px; margin-bottom: 6px; }
+        .mock-t2-sub  { height: 6px;  width: 35%; background: #888; border-radius: 2px; }
+        .mock-t2-body { padding: 0 18px; }
+
+        /* --- Template 3: Sidebar --- */
+        .mock-t3 { display: flex; height: 100%; }
+        .mock-t3-left  { width: 36%; background: var(--accent, #2c3e50); padding: 16px 10px; flex-shrink: 0; }
+        .mock-t3-right { flex: 1; padding: 16px 12px; }
+        .mock-t3-avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.25); margin: 0 auto 10px; }
+        .mock-t3-wname { height: 8px; width: 70%; background: rgba(255,255,255,0.85); border-radius: 2px; margin: 0 auto 5px; }
+        .mock-t3-wsub  { height: 5px; width: 50%; background: rgba(255,255,255,0.45); border-radius: 2px; margin: 0 auto 12px; }
+
+        /* --- Template 4: Minimal Two-Column --- */
+        .mock-t4 { display: flex; gap: 0; height: 100%; }
+        .mock-t4-left  { width: 38%; border-right: 2px solid #eee; padding: 20px 12px; }
+        .mock-t4-right { flex: 1; padding: 20px 12px; }
+
+        /* --- Template 5: Executive --- */
+        .mock-t5-accent { height: 6px; width: 100%; background: var(--accent, #c0392b); }
+        .mock-t5-top    { padding: 16px 18px 10px; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .mock-t5-body   { padding: 0 18px; }
+
+        /* --- Template 6: Creative Bold --- */
+        .mock-t6-left { width: 42%; background: var(--accent, #16a085); padding: 20px 12px; }
+        .mock-t6-right { flex: 1; padding: 20px 12px; background: #fff; }
+        .mock-t6 { display: flex; height: 100%; }
+        .mock-t6-big { height: 14px; width: 80%; background: rgba(255,255,255,0.9); border-radius: 3px; margin-bottom: 8px; }
+        .mock-t6-med { height: 7px; background: rgba(255,255,255,0.5); border-radius: 2px; margin-bottom: 5px; }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(244,242,238,0.92);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .loading-overlay.active { display: flex; }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid #e0ddd8;
+            border-top-color: #c0392b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+
+        .loading-sub {
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-logo">CV<span>.</span>AI</div>
+        {% if user %}
+        <div class="header-user">
+            {% if user.picture %}
+                <img src="{{ user.picture }}" alt="{{ user.name }}" referrerpolicy="no-referrer">
+            {% endif %}
+            <span>{{ user.name }}</span>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Choose your <em>template</em></h1>
+        <p>Your CV has been optimised. Now pick a design that gets you hired.</p>
+    </div>
+
+    <!-- Color filter -->
+    <div class="filter-bar">
+        <span class="filter-label">Color</span>
+        <button class="color-swatch active" style="background:#1a1a1a;" data-color="#1a1a1a" title="Charcoal"></button>
+        <button class="color-swatch" style="background:#c0392b;" data-color="#c0392b" title="Red"></button>
+        <button class="color-swatch" style="background:#2980b9;" data-color="#2980b9" title="Blue"></button>
+        <button class="color-swatch" style="background:#16a085;" data-color="#16a085" title="Teal"></button>
+        <button class="color-swatch" style="background:#8e44ad;" data-color="#8e44ad" title="Purple"></button>
+        <button class="color-swatch" style="background:#d35400;" data-color="#d35400" title="Orange"></button>
+        <button class="color-swatch" style="background:#27ae60;" data-color="#27ae60" title="Green"></button>
+    </div>
+
+    <div class="grid-label">All templates (6)</div>
+
+    <!-- Template Grid -->
+    <div class="template-grid" id="templateGrid">
+
+        <!-- ─── Template 1: Classic ─── -->
+        <div class="template-card" data-template="classic">
+            <div class="card-preview">
+                <span class="badge">Recommended</span>
+                <div class="mock" style="padding:24px 20px;">
+                    <span class="mock-line mock-h1"></span>
+                    <span class="mock-line mock-sub"></span>
+                    <span class="mock-line" style="height:5px;width:80%;background:#bbb;display:block;margin-bottom:12px;border-radius:2px;"></span>
+                    <span class="mock-line mock-divider"></span>
+                    <span class="mock-line mock-label"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w60"></span>
+                    <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                    <span class="mock-line mock-label"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w45"></span>
+                    <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                    <span class="mock-line mock-label"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w60"></span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Classic</span>
+                <button class="choose-btn" onclick="chooseTemplate('classic')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 2: Modern Dark Header ─── -->
+        <div class="template-card" data-template="modern">
+            <div class="card-preview">
+                <span class="badge">Recommended</span>
+                <div class="mock-t2-header">
+                    <div class="mock-t2-name"></div>
+                    <div class="mock-t2-sub"></div>
+                    <div style="height:5px;width:60%;background:rgba(255,255,255,0.3);border-radius:2px;margin-top:5px;"></div>
+                </div>
+                <div class="mock-t2-body">
+                    <span class="mock-line mock-label" style="background:var(--accent,#1a1a1a);width:25%;"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w60"></span>
+                    <span class="mock-line mock-divider" style="margin-top:10px;"></span>
+                    <span class="mock-line mock-label" style="background:var(--accent,#1a1a1a);width:25%;"></span>
+                    <span class="mock-line mock-text w90"></span>
+                    <span class="mock-line mock-text w60"></span>
+                    <span class="mock-line mock-text w75"></span>
+                    <span class="mock-line mock-text w45"></span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Modern</span>
+                <button class="choose-btn" onclick="chooseTemplate('modern')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 3: Sidebar ─── -->
+        <div class="template-card" data-template="sidebar">
+            <div class="card-preview" style="padding:0;">
+                <div class="mock-t3">
+                    <div class="mock-t3-left" style="background:var(--accent,#2c3e50);">
+                        <div class="mock-t3-avatar"></div>
+                        <div class="mock-t3-wname"></div>
+                        <div class="mock-t3-wsub"></div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:10px;"></div>
+                        <div style="height:6px;width:60%;background:rgba(255,255,255,0.6);border-radius:2px;margin-bottom:6px;"></div>
+                        <div style="height:5px;width:80%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:55%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:14px;"></div>
+                        <div style="height:6px;width:60%;background:rgba(255,255,255,0.6);border-radius:2px;margin-bottom:6px;"></div>
+                        <div style="height:5px;width:80%;background:rgba(255,255,255,0.3);border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:65%;background:rgba(255,255,255,0.3);border-radius:2px;"></div>
+                    </div>
+                    <div class="mock-t3-right">
+                        <span class="mock-line mock-label" style="background:var(--accent,#2c3e50);width:40%;margin-bottom:8px;"></span>
+                        <span class="mock-line mock-text w90"></span>
+                        <span class="mock-line mock-text w75"></span>
+                        <span class="mock-line mock-text w60"></span>
+                        <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                        <span class="mock-line mock-label" style="background:var(--accent,#2c3e50);width:40%;margin-bottom:8px;"></span>
+                        <span class="mock-line mock-text w90"></span>
+                        <span class="mock-line mock-text w75"></span>
+                        <span class="mock-line mock-text w45"></span>
+                        <span class="mock-line mock-divider" style="margin-top:8px;"></span>
+                        <span class="mock-line mock-label" style="background:var(--accent,#2c3e50);width:40%;margin-bottom:8px;"></span>
+                        <span class="mock-line mock-text w90"></span>
+                        <span class="mock-line mock-text w60"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Sidebar</span>
+                <button class="choose-btn" onclick="chooseTemplate('sidebar')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 4: Minimal Two-Column ─── -->
+        <div class="template-card" data-template="twocol">
+            <div class="card-preview" style="padding:0;">
+                <div class="mock-t4">
+                    <div class="mock-t4-left">
+                        <div style="height:10px;width:75%;background:#1a1a1a;border-radius:2px;margin-bottom:6px;"></div>
+                        <div style="height:6px;width:55%;background:#bbb;border-radius:2px;margin-bottom:14px;"></div>
+                        <div style="height:6px;width:60%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:60%;background:#ddd;border-radius:2px;margin-bottom:14px;"></div>
+                        <div style="height:6px;width:60%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:65%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:75%;background:#ddd;border-radius:2px;"></div>
+                    </div>
+                    <div class="mock-t4-right">
+                        <div style="height:6px;width:50%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:75%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:6px;width:50%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:6px;width:50%;background:var(--accent,#1a1a1a);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:60%;background:#ddd;border-radius:2px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Two Column</span>
+                <button class="choose-btn" onclick="chooseTemplate('twocol')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 5: Executive ─── -->
+        <div class="template-card" data-template="executive">
+            <div class="card-preview">
+                <div class="mock-t5-accent" style="background:var(--accent,#c0392b);"></div>
+                <div class="mock-t5-top">
+                    <div style="height:12px;width:55%;background:#1a1a1a;border-radius:2px;margin-bottom:6px;"></div>
+                    <div style="height:6px;width:40%;background:#bbb;border-radius:2px;margin-bottom:5px;"></div>
+                    <div style="height:5px;width:65%;background:#ddd;border-radius:2px;"></div>
+                </div>
+                <div class="mock-t5-body">
+                    <div style="height:7px;width:28%;background:var(--accent,#c0392b);border-radius:2px;margin-bottom:8px;"></div>
+                    <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:75%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:60%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                    <div style="height:7px;width:28%;background:var(--accent,#c0392b);border-radius:2px;margin-bottom:8px;"></div>
+                    <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:55%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                    <div style="height:7px;width:28%;background:var(--accent,#c0392b);border-radius:2px;margin-bottom:8px;"></div>
+                    <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                    <div style="height:5px;width:65%;background:#ddd;border-radius:2px;"></div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Executive</span>
+                <button class="choose-btn" onclick="chooseTemplate('executive')">Choose</button>
+            </div>
+        </div>
+
+        <!-- ─── Template 6: Creative Bold ─── -->
+        <div class="template-card" data-template="creative">
+            <div class="card-preview" style="padding:0;">
+                <div class="mock-t6">
+                    <div class="mock-t6-left" style="background:var(--accent,#16a085);">
+                        <div class="mock-t6-big"></div>
+                        <div style="height:7px;width:60%;background:rgba(255,255,255,0.5);border-radius:2px;margin-bottom:18px;"></div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:12px;"></div>
+                        <div class="mock-t6-med" style="width:70%;"></div>
+                        <div class="mock-t6-med" style="width:80%;"></div>
+                        <div class="mock-t6-med" style="width:60%;margin-bottom:14px;"></div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:12px;"></div>
+                        <div class="mock-t6-med" style="width:75%;"></div>
+                        <div class="mock-t6-med" style="width:55%;"></div>
+                        <div class="mock-t6-med" style="width:65%;"></div>
+                    </div>
+                    <div class="mock-t6-right">
+                        <div style="height:8px;width:50%;background:var(--accent,#16a085);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:75%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:8px;width:50%;background:var(--accent,#16a085);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:90%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:70%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:85%;background:#ddd;border-radius:2px;margin-bottom:12px;"></div>
+                        <div style="height:8px;width:50%;background:var(--accent,#16a085);border-radius:2px;margin-bottom:8px;"></div>
+                        <div style="height:5px;width:80%;background:#ddd;border-radius:2px;margin-bottom:4px;"></div>
+                        <div style="height:5px;width:60%;background:#ddd;border-radius:2px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="template-name">Creative</span>
+                <button class="choose-btn" onclick="chooseTemplate('creative')">Choose</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Building your CV…</div>
+        <div class="loading-sub">Just a moment</div>
+    </div>
+
+    <script>
+        const resultId   = "{{ result_id }}";
+        let selectedColor = "#1a1a1a";
+
+        // ── Color swatch selection ──
+        document.querySelectorAll('.color-swatch').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedColor = btn.dataset.color;
+                document.documentElement.style.setProperty('--accent', selectedColor);
+                // update all mock accent references
+                document.querySelectorAll('[style*="var(--accent"]').forEach(el => {
+                    // CSS var updates automatically via the root variable
+                });
+            });
+        });
+
+        // ── Card click selects it ──
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.classList.contains('choose-btn')) return;
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+        });
+
+        // ── Choose template → navigate to result ──
+        function chooseTemplate(templateName) {
+            document.getElementById('loadingOverlay').classList.add('active');
+            const url = `/result/${resultId}?template=${templateName}&color=${encodeURIComponent(selectedColor)}`;
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html> -->

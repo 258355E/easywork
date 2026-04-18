@@ -1,0 +1,738 @@
+{% extends "base.html" %}
+{% block title %}Edit CV | Easywork.LK{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+<style>
+  /* ── Edit-page layout — inherits all tokens from base.css ── */
+
+  .editor-shell {
+    padding: 32px 0 48px;
+  }
+
+  .editor-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .editor-topbar h1 {
+    margin: 4px 0 0;
+    font-size: 36px;
+    line-height: 1.1;
+  }
+
+  .editor-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 8px;
+  }
+
+  /* 3-column: sidebar | form | preview */
+  .editor-layout {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Sidebar ── */
+  .editor-sidebar {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e6e2d5);
+    border-radius: var(--radius-lg, 20px);
+    box-shadow: var(--shadow-card, 0 4px 20px rgba(0,0,0,.06));
+    padding: 12px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .step-link {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 13px 15px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--text-muted, #6b7280);
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: background .15s, color .15s;
+    font-family: inherit;
+  }
+
+  .step-link:hover {
+    background: var(--hover-bg, #f3f4f6);
+    color: var(--text, #111827);
+  }
+
+  .step-link.active {
+    background: var(--brand-soft, #eafaf1);
+    color: var(--brand, #27ae60);
+  }
+
+  /* ── Form panel ── */
+  .editor-form {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e6e2d5);
+    border-radius: var(--radius-lg, 20px);
+    box-shadow: var(--shadow-card, 0 4px 20px rgba(0,0,0,.06));
+    padding: 24px;
+  }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .step-panel h2 {
+    margin: 0 0 18px;
+    font-size: 20px;
+    color: var(--text, #111827);
+  }
+
+  .grid-2, .grid-3 {
+    display: grid;
+    gap: 14px;
+  }
+  .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text, #111827);
+    letter-spacing: .01em;
+  }
+
+  .input, .textarea {
+    width: 100%;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 11px;
+    padding: 11px 13px;
+    font-size: 14.5px;
+    background: var(--input-bg, #fff);
+    font-family: inherit;
+    color: var(--text, #111827);
+    transition: border-color .15s, box-shadow .15s;
+  }
+
+  .input:focus, .textarea:focus {
+    outline: none;
+    border-color: var(--brand, #27ae60);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand, #27ae60) 14%, transparent);
+  }
+
+  .textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stack-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .repeat-card {
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 14px;
+    background: var(--soft, #f7f9fb);
+    padding: 16px;
+  }
+
+  .repeat-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .repeat-title {
+    font-weight: 800;
+    font-size: 13.5px;
+    color: var(--text, #111827);
+  }
+
+  .inline-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Preview panel ── */
+  .editor-preview {
+    position: sticky;
+    top: 20px;
+    background: linear-gradient(160deg, #0d1c3f 0%, #091329 100%);
+    color: #fff;
+    overflow: hidden;
+    border-radius: var(--radius-lg, 20px);
+    padding: 18px;
+  }
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .preview-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .preview-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.13);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: capitalize;
+  }
+
+  .preview-viewport {
+    width: 100%;
+    height: 76vw;
+    max-height: 860px;
+    min-height: 420px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #c8c6be;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .preview-scaler {
+    transform-origin: top left;
+  }
+
+  .preview-page {
+    width: 794px;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.28);
+  }
+
+  #miniPreview {
+    background: #fff;
+    color: #111827;
+  }
+
+  /* ── Button overrides (small variant) ── */
+  .btn-small {
+    padding: 8px 12px;
+    font-size: 12.5px;
+  }
+
+  .btn-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .empty-inline {
+    border: 1px dashed var(--border, #d1d5db);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--text-muted, #6b7280);
+    background: var(--soft, #fafafa);
+    font-size: 13.5px;
+  }
+
+
+  /* ── Responsive ── */
+  @media (max-width: 1300px) {
+    .editor-layout {
+      grid-template-columns: 200px 1fr;
+    }
+    .editor-preview {
+      grid-column: 1 / -1;
+      position: static;
+    }
+    .preview-viewport { height: 600px; }
+  }
+
+  @media (max-width: 860px) {
+    .editor-layout { grid-template-columns: 1fr; }
+    .editor-sidebar { position: static; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .editor-topbar { flex-direction: column; }
+    .editor-topbar h1 { font-size: 26px; }
+    .preview-viewport { height: 500px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<script type="application/json" id="app-data">
+{
+  "cv": {{ cv | tojson }},
+  "resultId": {{ result_id | tojson }},
+  "template": {{ template | tojson }},
+  "theme": {{ theme | tojson }}
+}
+</script>
+
+<section class="editor-shell">
+  <div class="container">
+
+    <div class="editor-topbar">
+      <div>
+        <span class="eyebrow">Guided editor</span>
+        <h1>Edit your CV</h1>
+      </div>
+      <div class="editor-actions">
+        <a href="{{ url_for('select_template', result_id=result_id) }}" class="btn btn-secondary">Change Template</a>
+        <button id="saveBtn" class="btn btn-primary" type="button">Save &amp; View Result</button>
+      </div>
+    </div>
+
+    <div class="editor-layout">
+
+      <!-- Sidebar nav -->
+      <aside class="editor-sidebar">
+        <button class="step-link active" data-step="personal">Personal Details</button>
+        <button class="step-link" data-step="summary">Professional Summary</button>
+        <button class="step-link" data-step="experience">Experience</button>
+        <button class="step-link" data-step="education">Education</button>
+        <button class="step-link" data-step="certifications">Certifications</button>
+        <button class="step-link" data-step="skills">Skills</button>
+      </aside>
+
+      <!-- Form -->
+      <section class="editor-form">
+
+        <div class="step-panel active" data-step-panel="personal">
+          <h2>Personal details</h2>
+          <div class="grid-2">
+            <div class="field"><label>Full name</label><input id="full_name" class="input"></div>
+            <div class="field"><label>Headline</label><input id="headline" class="input"></div>
+            <div class="field"><label>Phone</label><input id="phone" class="input"></div>
+            <div class="field"><label>Email</label><input id="email" class="input"></div>
+            <div class="field"><label>LinkedIn</label><input id="linkedin" class="input"></div>
+            <div class="field"><label>Address</label><input id="address" class="input"></div>
+          </div>
+        </div>
+
+        <div class="step-panel" data-step-panel="summary">
+          <h2>Professional summary</h2>
+          <div class="field">
+            <label>Career summary</label>
+            <textarea id="career_summary" class="textarea" rows="10"></textarea>
+          </div>
+        </div>
+
+        <div class="step-panel" data-step-panel="experience">
+          <div class="row-head">
+            <h2>Experience</h2>
+            <button class="btn btn-secondary btn-small" type="button" id="addExpBtn">+ Add experience</button>
+          </div>
+          <div id="experienceList" class="stack-list"></div>
+        </div>
+
+        <div class="step-panel" data-step-panel="education">
+          <div class="row-head">
+            <h2>Education</h2>
+            <button class="btn btn-secondary btn-small" type="button" id="addEduBtn">+ Add education</button>
+          </div>
+          <div id="educationList" class="stack-list"></div>
+        </div>
+
+        <div class="step-panel" data-step-panel="certifications">
+          <div class="row-head">
+            <h2>Certifications</h2>
+            <button class="btn btn-secondary btn-small" type="button" id="addCertBtn">+ Add certification</button>
+          </div>
+          <div id="certificationList" class="stack-list"></div>
+        </div>
+
+        <div class="step-panel" data-step-panel="skills">
+          <h2>Skills</h2>
+          <div class="field">
+            <label>Software / tools / core skills</label>
+            <textarea id="skills_software" class="textarea" rows="6" placeholder="One skill per line"></textarea>
+          </div>
+          <div class="field">
+            <label>Languages</label>
+            <textarea id="skills_languages" class="textarea" rows="4" placeholder="One language per line"></textarea>
+          </div>
+          <div class="field">
+            <label>Other skills</label>
+            <textarea id="skills_other" class="textarea" rows="4" placeholder="One item per line"></textarea>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Preview -->
+      <aside class="editor-preview">
+        <div class="preview-header">
+          <h3>Live preview</h3>
+          <span class="preview-badge">{{ template }}</span>
+        </div>
+        <div class="preview-viewport" id="previewViewport">
+          <div class="preview-scaler" id="previewScaler">
+            <div class="preview-page" id="previewPage">
+              <div id="miniPreview"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div><!-- /.editor-layout -->
+  </div><!-- /.container -->
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const APP        = JSON.parse(document.getElementById('app-data').textContent || '{}');
+  const RESULT_ID  = APP.resultId;
+  const TEMPLATE   = APP.template || 'classic';
+  const THEME      = APP.theme    || '#27ae60';
+  const CV         = APP.cv       || {};
+
+  const $  = id => document.getElementById(id);
+
+  /* ── state ── */
+  const state = {
+    full_name:      CV.full_name      || '',
+    headline:       CV.headline       || '',
+    career_summary: CV.career_summary || '',
+    contact: {
+      phone:    CV.contact?.phone    || '',
+      email:    CV.contact?.email    || '',
+      linkedin: CV.contact?.linkedin || '',
+      address:  CV.contact?.address  || ''
+    },
+    work_experience: Array.isArray(CV.work_experience) ? CV.work_experience : [],
+    education:       Array.isArray(CV.education)       ? CV.education       : [],
+    certifications:  Array.isArray(CV.certifications)  ? CV.certifications  : [],
+    skills: {
+      software:  Array.isArray(CV.skills?.software)  ? CV.skills.software  : [],
+      languages: Array.isArray(CV.skills?.languages) ? CV.skills.languages : [],
+      other:     Array.isArray(CV.skills?.other)     ? CV.skills.other     : []
+    },
+    suggestions: Array.isArray(CV.suggestions) ? CV.suggestions : [],
+    layout: {
+      font_scale: Number(CV.layout?.font_scale || 1),
+      line_spacing: Number(CV.layout?.line_spacing || 1),
+      space_scale: Number(CV.layout?.space_scale || 1)
+    }
+  };
+
+
+  /* ── scale preview ── */
+  function scalePreview() {
+    const viewport = $('previewViewport');
+    const scaler   = $('previewScaler');
+    if (!viewport || !scaler) return;
+    const available = viewport.clientWidth - 24;
+    const scale     = Math.min(available / 794, 1);
+    scaler.style.width          = '794px';
+    scaler.style.transform      = `scale(${scale})`;
+    scaler.style.transformOrigin = 'top left';
+  }
+
+  /* ── helpers ── */
+  function arrayToLines(arr) { return (arr || []).join('\n'); }
+  function linesToArray(v)   { return v.split('\n').map(s => s.trim()).filter(Boolean); }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escapeHtmlAttr(str) {
+    return String(str || '')
+      .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+      .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── bind basic fields ── */
+  function bindBasicFields() {
+    $('full_name').value        = state.full_name;
+    $('headline').value         = state.headline;
+    $('phone').value            = state.contact.phone;
+    $('email').value            = state.contact.email;
+    $('linkedin').value         = state.contact.linkedin;
+    $('address').value          = state.contact.address;
+    $('career_summary').value   = state.career_summary;
+    $('skills_software').value  = state.skills.software.join('\n');
+    $('skills_languages').value = state.skills.languages.join('\n');
+    $('skills_other').value     = state.skills.other.join('\n');
+
+    [
+      'full_name','headline','phone','email','linkedin','address',
+      'career_summary','skills_software','skills_languages','skills_other'
+    ].forEach(id => {
+      $(id).addEventListener('input', async () => {
+        collect();
+        await rerenderPreviewFromServer();
+      });
+    });
+  }
+
+  function collect() {
+    state.full_name          = $('full_name').value.trim();
+    state.headline           = $('headline').value.trim();
+    state.contact.phone      = $('phone').value.trim();
+    state.contact.email      = $('email').value.trim();
+    state.contact.linkedin   = $('linkedin').value.trim();
+    state.contact.address    = $('address').value.trim();
+    state.career_summary     = $('career_summary').value.trim();
+    state.skills.software    = $('skills_software').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    state.skills.languages   = $('skills_languages').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    state.skills.other       = $('skills_other').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  }
+
+  /* ── render dynamic lists ── */
+  function renderExperience() {
+    const wrap = $('experienceList');
+    if (!state.work_experience.length) {
+      wrap.innerHTML = '<div class="empty-inline">No experience added yet.</div>'; return;
+    }
+    wrap.innerHTML = state.work_experience.map((item, i) => `
+      <div class="repeat-card">
+        <div class="repeat-head">
+          <div class="repeat-title">Experience ${i + 1}</div>
+          <div class="inline-actions">
+            <button class="btn-danger" type="button" onclick="removeExperience(${i})">Delete</button>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Job title</label>
+            <input class="input" value="${escapeHtmlAttr(item.job_title||'')}" oninput="updateExperience(${i},'job_title',this.value)"></div>
+          <div class="field"><label>Company</label>
+            <input class="input" value="${escapeHtmlAttr(item.company||'')}" oninput="updateExperience(${i},'company',this.value)"></div>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Location</label>
+            <input class="input" value="${escapeHtmlAttr(item.location||'')}" oninput="updateExperience(${i},'location',this.value)"></div>
+          <div class="field"><label>Start date</label>
+            <input class="input" value="${escapeHtmlAttr(item.start_date||'')}" oninput="updateExperience(${i},'start_date',this.value)"></div>
+          <div class="field"><label>End date</label>
+            <input class="input" value="${escapeHtmlAttr(item.end_date||'')}" oninput="updateExperience(${i},'end_date',this.value)"></div>
+        </div>
+        <div class="field"><label>Bullets (one per line)</label>
+          <textarea class="textarea" rows="5" oninput="updateExperienceBullets(${i},this.value)">${escapeHtml(arrayToLines(item.bullets||[]))}</textarea>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderEducation() {
+    const wrap = $('educationList');
+    if (!state.education.length) {
+      wrap.innerHTML = '<div class="empty-inline">No education added yet.</div>'; return;
+    }
+    wrap.innerHTML = state.education.map((item, i) => `
+      <div class="repeat-card">
+        <div class="repeat-head">
+          <div class="repeat-title">Education ${i + 1}</div>
+          <div class="inline-actions">
+            <button class="btn-danger" type="button" onclick="removeEducation(${i})">Delete</button>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Degree</label>
+            <input class="input" value="${escapeHtmlAttr(item.degree||'')}" oninput="updateEducation(${i},'degree',this.value)"></div>
+          <div class="field"><label>Institution</label>
+            <input class="input" value="${escapeHtmlAttr(item.institution||'')}" oninput="updateEducation(${i},'institution',this.value)"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Location</label>
+            <input class="input" value="${escapeHtmlAttr(item.location||'')}" oninput="updateEducation(${i},'location',this.value)"></div>
+          <div class="field"><label>Graduation date</label>
+            <input class="input" value="${escapeHtmlAttr(item.graduation_date||'')}" oninput="updateEducation(${i},'graduation_date',this.value)"></div>
+        </div>
+        <div class="field"><label>Details (one per line)</label>
+          <textarea class="textarea" rows="4" oninput="updateEducationDetails(${i},this.value)">${escapeHtml(arrayToLines(item.details||[]))}</textarea>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderCertifications() {
+    const wrap = $('certificationList');
+    if (!state.certifications.length) {
+      wrap.innerHTML = '<div class="empty-inline">No certifications added yet.</div>'; return;
+    }
+    wrap.innerHTML = state.certifications.map((item, i) => `
+      <div class="repeat-card">
+        <div class="repeat-head">
+          <div class="repeat-title">Certification ${i + 1}</div>
+          <div class="inline-actions">
+            <button class="btn-danger" type="button" onclick="removeCertification(${i})">Delete</button>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Name</label>
+            <input class="input" value="${escapeHtmlAttr(item.name||'')}" oninput="updateCertification(${i},'name',this.value)"></div>
+          <div class="field"><label>Issuer</label>
+            <input class="input" value="${escapeHtmlAttr(item.issuer||'')}" oninput="updateCertification(${i},'issuer',this.value)"></div>
+          <div class="field"><label>Date</label>
+            <input class="input" value="${escapeHtmlAttr(item.date||'')}" oninput="updateCertification(${i},'date',this.value)"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ── window-level mutation helpers ── */
+  window.updateExperience = async (i, key, val) => {
+    state.work_experience[i][key] = val;
+    await rerenderPreviewFromServer();
+  };
+  window.updateExperienceBullets = async (i, val) => {
+    state.work_experience[i].bullets = linesToArray(val);
+    await rerenderPreviewFromServer();
+  };
+  window.removeExperience = async i => {
+    state.work_experience.splice(i, 1); renderExperience();
+    await rerenderPreviewFromServer();
+  };
+  window.updateEducation = async (i, key, val) => {
+    state.education[i][key] = val;
+    await rerenderPreviewFromServer();
+  };
+  window.updateEducationDetails = async (i, val) => {
+    state.education[i].details = linesToArray(val);
+    await rerenderPreviewFromServer();
+  };
+  window.removeEducation = async i => {
+    state.education.splice(i, 1); renderEducation();
+    await rerenderPreviewFromServer();
+  };
+  window.updateCertification = async (i, key, val) => {
+    state.certifications[i][key] = val;
+    await rerenderPreviewFromServer();
+  };
+  window.removeCertification = async i => {
+    state.certifications.splice(i, 1); renderCertifications();
+    await rerenderPreviewFromServer();
+  };
+
+  /* ── add buttons ── */
+  $('addExpBtn').addEventListener('click', async () => {
+    state.work_experience.push({ job_title:'', company:'', location:'', start_date:'', end_date:'', bullets:[] });
+    renderExperience(); await rerenderPreviewFromServer();
+  });
+  $('addEduBtn').addEventListener('click', async () => {
+    state.education.push({ institution:'', degree:'', location:'', graduation_date:'', details:[] });
+    renderEducation(); await rerenderPreviewFromServer();
+  });
+  $('addCertBtn').addEventListener('click', async () => {
+    state.certifications.push({ name:'', issuer:'', date:'' });
+    renderCertifications(); await rerenderPreviewFromServer();
+  });
+
+  /* ── payload ── */
+  function payload() {
+    return {
+      resume_data: {
+        full_name:       state.full_name,
+        headline:        state.headline,
+        career_summary:  state.career_summary,
+        contact:         state.contact,
+        work_experience: state.work_experience,
+        education:       state.education,
+        certifications:  state.certifications,
+        skills:          state.skills,
+        suggestions:     state.suggestions,
+        layout:          state.layout
+      },
+      saved_template: TEMPLATE,
+      theme_color:    THEME
+    };
+  }
+
+  /* ── server-side preview render ── */
+  async function rerenderPreviewFromServer() {
+    try {
+      const res  = await fetch(`/api/result/${RESULT_ID}/preview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload())
+      });
+      const data = await res.json();
+      if (!data.ok) { console.error(data.error || 'Preview failed'); return; }
+      $('miniPreview').innerHTML = data.html;
+      scalePreview();
+    } catch(e) {
+      console.error('Preview request failed', e);
+    }
+  }
+
+  /* ── direct edit helpers ── */
+
+  /* ── save ── */
+  $('saveBtn').addEventListener('click', async () => {
+    collect();
+    try {
+      const res  = await fetch(`/api/result/${RESULT_ID}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload())
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Save failed.');
+      window.location.href = `/result/${RESULT_ID}`;
+    } catch(err) {
+      alert(err.message || 'Could not save.');
+    }
+  });
+
+  /* ── sidebar nav ── */
+  document.querySelectorAll('.step-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.step-link').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.step-panel').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`[data-step-panel="${btn.dataset.step}"]`).classList.add('active');
+    });
+  });
+
+  /* ── init ── */
+  window.addEventListener('resize', scalePreview);
+  window.addEventListener('load', async () => {
+    bindBasicFields();
+    renderExperience();
+    renderEducation();
+    renderCertifications();
+    await rerenderPreviewFromServer();
+  });
+})();
+</script>
+{% endblock %}

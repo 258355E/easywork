@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Easywork.LK{% endblock %}</title>
+  <meta name="theme-color" content="#f2cc00" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body {% block body_attrs %}{% endblock %}>
+  <header class="site-header">
+    <div class="container header-wrap">
+      <a href="{{ url_for('index') }}" class="logo">Easywork<span>.LK</span></a>
+
+      <nav class="header-nav">
+        {% if user %}
+          <a href="{{ url_for('documents') }}" class="nav-link">My Documents</a>
+          <a href="{{ url_for('improve') }}" class="nav-link">Improve CV</a>
+
+          <div class="top-user">
+            {% if user.picture %}
+              <img src="{{ user.picture }}" alt="{{ user.name }}" class="top-user-avatar" referrerpolicy="no-referrer">
+            {% else %}
+              <div class="top-user-avatar top-user-avatar-fallback">
+                {{ (user.name or 'U')[0] | upper }}
+              </div>
+            {% endif %}
+            <div class="top-user-meta">
+              <span>Hello,</span>
+              <strong>{{ user.name }}</strong>
+            </div>
+          </div>
+
+          <a href="{{ url_for('logout') }}" class="nav-cta nav-cta-secondary">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="nav-cta">Login with Google</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© 2026 Easywork.LK. All rights reserved.</span>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Cookies</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

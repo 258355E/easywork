@@ -1,0 +1,52 @@
+{% from "cv/_resume_sections.html" import contact_item, render_summary, render_experience, render_education, render_certifications, render_skills %}
+<style>
+  :root {
+    --accent: {{ theme or '#1f4e79' }};
+    --text: #111827;
+    --muted: #4b5563;
+    --line: #d1d5db;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; color: var(--text); background: #ffffff; }
+  .resume-page { max-width: 860px; margin: 0 auto; padding: 34px 38px; }
+  .resume-header { border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+  .resume-name { font-size: 30px; font-weight: 700; }
+  .resume-headline { margin-top: 6px; font-size: 14px; color: var(--accent); }
+  .resume-contact { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 13px; color: var(--muted); }
+  .contact-item::after { content: '|'; margin-left: 12px; color: var(--line); }
+  .contact-item:last-child::after { content: ''; }
+  .resume-section { margin-top: 18px; }
+  .resume-section__title { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; color: var(--accent); margin-bottom: 10px; font-weight: 700; }
+  .resume-summary,.skills-group__list,.entry-subtitle,.entry-date { color: var(--muted); }
+  .resume-summary { margin: 0; line-height: 1.7; font-size: 14px; }
+  .resume-entry + .resume-entry { margin-top: 14px; }
+  .entry-head { display: flex; justify-content: space-between; gap: 12px; }
+  .entry-title { font-size: 16px; font-weight: 700; }
+  .entry-subtitle { margin-top: 2px; font-size: 13px; }
+  .entry-date { font-size: 12px; white-space: nowrap; }
+  .resume-bullets { margin: 8px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.6; }
+  .skills-group { display: grid; gap: 10px; }
+  .skills-group__label { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+  .skills-group__list { font-size: 14px; line-height: 1.6; }
+  @page { margin: 0.55in; }
+  @media (max-width: 720px) { .resume-page{padding:20px;} .entry-head{flex-direction:column;gap:4px;} .contact-item::after{display:none;} }
+</style>
+<div class="resume-page template-classic">
+  <header class="resume-header">
+    <div class="resume-name">{{ cv.full_name or 'Your Name' }}</div>
+    {% if cv.headline %}<div class="resume-headline">{{ cv.headline }}</div>{% endif %}
+    <div class="resume-contact">
+      {{ contact_item('phone', cv.contact.phone) }}
+      {{ contact_item('email', cv.contact.email) }}
+      {{ contact_item('linkedin', cv.contact.linkedin) }}
+      {{ contact_item('address', cv.contact.address) }}
+    </div>
+  </header>
+  <main>
+    {{ render_summary(cv) }}
+    {{ render_experience(cv) }}
+    {{ render_education(cv) }}
+    {{ render_certifications(cv) }}
+    {{ render_skills(cv) }}
+  </main>
+</div>

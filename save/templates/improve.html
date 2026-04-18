@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}Improve Your CV | Easywork.LK{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+  <div class="container">
+    <div class="section-head left">
+      <span class="eyebrow">Resume improvement</span>
+      <h1>Upload your CV</h1>
+      <p>Upload your current resume, add a job description if available, and let AI prepare a stronger version.</p>
+    </div>
+
+    <div id="errorBox" class="alert alert-error"></div>
+
+    <div class="upload-layout">
+      <div class="panel">
+        <form id="improveForm" enctype="multipart/form-data">
+          <div class="field-block">
+            <label class="field-label">CV file</label>
+            <div id="dropzone" class="dropzone" tabindex="0">
+              <input type="file" id="fileInput" name="cv_file" hidden accept=".pdf,.doc,.docx,.txt,.html">
+              <div class="dropzone-content">
+                <div class="drop-icon" id="iconDefault">⬆</div>
+                <div class="drop-icon ok" id="iconOk">✓</div>
+                <h3 id="dzTitle">Drag and drop your CV</h3>
+                <p id="dzSub">or click to browse your device</p>
+                <span class="hint">PDF, DOC, DOCX, TXT, HTML · max 10MB</span>
+              </div>
+            </div>
+
+            <div id="fileInfo" class="file-info">
+              <div>
+                <strong id="fileName"></strong>
+                <span id="fileSize"></span>
+              </div>
+              <button type="button" class="btn btn-secondary btn-small" id="removeBtn">Remove</button>
+            </div>
+          </div>
+
+          <div class="field-block">
+            <label class="field-label" for="jdArea">Job description (optional)</label>
+            <textarea id="jdArea" name="jd_text" class="textarea" rows="8" placeholder="Paste the job description here to tailor the CV more precisely."></textarea>
+            <div class="muted-row">
+              <span>Optional but recommended</span>
+              <span><strong id="charCount">0</strong> characters</span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button id="submitBtn" class="btn btn-primary" type="submit" disabled>Generate Improved CV</button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="side-stack">
+        <div class="panel">
+          <h3 class="panel-title">How it works</h3>
+          <div class="step-list">
+            <div class="step-item"><span>1</span><div><strong>Upload your CV</strong><p>We extract and restructure your resume.</p></div></div>
+            <div class="step-item"><span>2</span><div><strong>Tailor with AI</strong><p>Add a job description to improve relevance and wording.</p></div></div>
+            <div class="step-item"><span>3</span><div><strong>Select a template</strong><p>Pick a polished layout and color style.</p></div></div>
+            <div class="step-item"><span>4</span><div><strong>Edit and export</strong><p>Make final adjustments and download the finished CV.</p></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="panel-title">Privacy</h3>
+          <ul class="check-list">
+            <li>Files are processed securely.</li>
+            <li>Unsupported file types are blocked.</li>
+            <li>Large files are rejected before upload.</li>
+            <li>Improved CV data is saved to your account for editing.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <h3>Generating your improved CV</h3>
+    <p>Please wait while your file is processed.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileInfo = document.getElementById('fileInfo');
+  const fileName = document.getElementById('fileName');
+  const fileSize = document.getElementById('fileSize');
+  const removeBtn = document.getElementById('removeBtn');
+  const dzTitle = document.getElementById('dzTitle');
+  const dzSub = document.getElementById('dzSub');
+  const iconDefault = document.getElementById('iconDefault');
+  const iconOk = document.getElementById('iconOk');
+  const submitBtn = document.getElementById('submitBtn');
+  const errorBox = document.getElementById('errorBox');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const form = document.getElementById('improveForm');
+  const jdArea = document.getElementById('jdArea');
+  const charCount = document.getElementById('charCount');
+
+  let selectedCvFile = null;
+
+  function fmt(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function clearError() {
+    errorBox.textContent = '';
+    errorBox.style.display = 'none';
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = !selectedCvFile;
+  }
+
+  function setFile(file) {
+    if (!file) return;
+
+    const ext = '.' + file.name.split('.').pop().toLowerCase();
+    if (!['.pdf', '.doc', '.docx', '.txt', '.html'].includes(ext)) {
+      showError('Please upload a PDF, DOCX, DOC, TXT, or HTML file.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showError('CV file size must be under 10 MB.');
+      return;
+    }
+
+    clearError();
+    selectedCvFile = file;
+    fileName.textContent = file.name;
+    fileSize.textContent = fmt(file.size) + ' · ready';
+    fileInfo.classList.add('visible');
+    dropzone.classList.add('has-file');
+    dzTitle.textContent = 'File selected';
+    dzSub.textContent = 'Drop another file to replace it';
+    iconDefault.style.display = 'none';
+    iconOk.style.display = 'block';
+    updateSubmitState();
+  }
+
+  function clearFile() {
+    selectedCvFile = null;
+    fileInput.value = '';
+    fileInfo.classList.remove('visible');
+    dropzone.classList.remove('has-file');
+    dzTitle.textContent = 'Drag and drop your CV';
+    dzSub.textContent = 'or click to browse your device';
+    iconDefault.style.display = 'grid';
+    iconOk.style.display = 'none';
+    updateSubmitState();
+  }
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) setFile(e.target.files[0]);
+  });
+
+  removeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearFile();
+  });
+
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragging');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragging');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files[0];
+    if (file) setFile(file);
+  });
+
+  jdArea.addEventListener('input', () => {
+    charCount.textContent = jdArea.value.length;
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    if (!selectedCvFile) {
+      showError('Please upload your CV first.');
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append('cv_file', selectedCvFile);
+    fd.append('jd_text', jdArea.value.trim());
+
+    loadingOverlay.classList.add('active');
+
+    try {
+      const res = await fetch('/api/improve-cv', {
+        method: 'POST',
+        body: fd
+      });
+      const data = await res.json();
+
+      if (!data.ok) {
+        throw new Error(data.error || 'Processing failed.');
+      }
+
+      window.location.href = data.redirect_url;
+    } catch (err) {
+      loadingOverlay.classList.remove('active');
+      showError(err.message || 'Something went wrong.');
+    }
+  });
+</script>
+{% endblock %}

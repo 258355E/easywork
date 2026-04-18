@@ -1,0 +1,70 @@
+{% from "cv/_resume_sections.html" import contact_item, render_summary, render_experience, render_education, render_certifications, render_skills %}
+
+{% set software = cv.skills.software if cv.skills and cv.skills.software else [] %}
+{% set languages = cv.skills.languages if cv.skills and cv.skills.languages else [] %}
+{% set other = cv.skills.other if cv.skills and cv.skills.other else [] %}
+
+<div class="resume-page template-sidebar" style="--accent: {{ theme }};">
+  <div class="resume-page__inner">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-col">
+      <div class="resume-name">{{ cv.full_name or "Your Name" }}</div>
+      {% if cv.headline %}<div class="resume-headline">{{ cv.headline }}</div>{% endif %}
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section-title">Contact</div>
+      {{ contact_item("phone", cv.contact.phone) }}
+      {{ contact_item("email", cv.contact.email) }}
+      {{ contact_item("linkedin", cv.contact.linkedin) }}
+      {{ contact_item("address", cv.contact.address) }}
+
+      {% if software or languages or other %}
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section-title">Skills</div>
+
+      {% if software %}
+        <div class="sidebar-subtitle">Software</div>
+        {% for s in software %}
+          <span class="sidebar-skill-tag">{{ s }}</span>
+        {% endfor %}
+      {% endif %}
+
+      {% if languages %}
+        <div class="sidebar-subtitle">Languages</div>
+        {% for l in languages %}
+          <span class="sidebar-skill-tag">{{ l }}</span>
+        {% endfor %}
+      {% endif %}
+
+      {% if other %}
+        <div class="sidebar-subtitle">Other</div>
+        {% for o in other %}
+          <span class="sidebar-skill-tag">{{ o }}</span>
+        {% endfor %}
+      {% endif %}
+      {% endif %}
+
+      {% if cv.certifications %}
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section-title">Certifications</div>
+      {% for cert in cv.certifications %}
+        <div class="sidebar-cert">
+          <div class="sidebar-cert__name">{{ cert.name }}</div>
+          <div class="sidebar-cert__issuer">{{ cert.issuer }}</div>
+          {% if cert.date %}<div class="sidebar-cert__date">{{ cert.date }}</div>{% endif %}
+        </div>
+      {% endfor %}
+      {% endif %}
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-col">
+      {{ render_summary(cv) }}
+      {{ render_experience(cv) }}
+      {{ render_education(cv) }}
+    </main>
+
+  </div>
+</div>

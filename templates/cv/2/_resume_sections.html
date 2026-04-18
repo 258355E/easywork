@@ -1,0 +1,135 @@
+{% macro contact_item(label, value) -%}
+  {% if value %}
+    <div class="contact-item contact-item--{{ label|replace('_', '-') }}">
+      <span class="contact-value">{{ value }}</span>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro section_title(title) -%}
+  <div class="resume-section__title">{{ title }}</div>
+{%- endmacro %}
+
+{% macro render_summary(cv, title='Professional Summary') -%}
+  {% if cv.career_summary %}
+  <section class="resume-section resume-section--summary">
+    {{ section_title(title) }}
+    <div class="resume-section__content">
+      <p class="resume-summary">{{ cv.career_summary }}</p>
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_experience(cv, title='Work Experience') -%}
+  {% if cv.work_experience %}
+  <section class="resume-section resume-section--experience">
+    {{ section_title(title) }}
+    <div class="resume-section__content">
+      {% for item in cv.work_experience %}
+      <article class="resume-entry">
+        <div class="entry-head">
+          <div class="entry-head__main">
+            <div class="entry-title">{{ item.job_title }}</div>
+            <div class="entry-subtitle">{{ item.company }}{% if item.location %} | {{ item.location }}{% endif %}</div>
+          </div>
+          {% if item.start_date or item.end_date %}
+          <div class="entry-date">{{ item.start_date }}{% if item.start_date or item.end_date %} - {% endif %}{{ item.end_date }}</div>
+          {% endif %}
+        </div>
+        {% if item.bullets %}
+        <ul class="resume-bullets">
+          {% for bullet in item.bullets %}
+          <li>{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_education(cv, title='Education') -%}
+  {% if cv.education %}
+  <section class="resume-section resume-section--education">
+    {{ section_title(title) }}
+    <div class="resume-section__content">
+      {% for item in cv.education %}
+      <article class="resume-entry resume-entry--compact">
+        <div class="entry-head">
+          <div class="entry-head__main">
+            <div class="entry-title">{{ item.degree }}</div>
+            <div class="entry-subtitle">{{ item.institution }}{% if item.location %} | {{ item.location }}{% endif %}</div>
+          </div>
+          {% if item.graduation_date %}<div class="entry-date">{{ item.graduation_date }}</div>{% endif %}
+        </div>
+        {% if item.details %}
+        <ul class="resume-bullets">
+          {% for detail in item.details %}
+          <li>{{ detail }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_certifications(cv, title='Certifications') -%}
+  {% if cv.certifications %}
+  <section class="resume-section resume-section--certifications">
+    {{ section_title(title) }}
+    <div class="resume-section__content">
+      {% for item in cv.certifications %}
+      <article class="resume-entry resume-entry--compact">
+        <div class="entry-head">
+          <div class="entry-head__main">
+            <div class="entry-title">{{ item.name }}</div>
+            {% if item.issuer %}<div class="entry-subtitle">{{ item.issuer }}</div>{% endif %}
+          </div>
+          {% if item.date %}<div class="entry-date">{{ item.date }}</div>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}
+
+{% macro render_skills(cv, title='Skills') -%}
+  {% set software = cv.skills.software if cv.skills and cv.skills.software else [] %}
+  {% set languages = cv.skills.languages if cv.skills and cv.skills.languages else [] %}
+  {% set other = cv.skills.other if cv.skills and cv.skills.other else [] %}
+
+  {% if software or languages or other %}
+  <section class="resume-section resume-section--skills">
+    {{ section_title(title) }}
+    <div class="resume-section__content skills-group">
+      {% if software %}
+      <div class="skills-group__bucket">
+        <div class="skills-group__label">Technical</div>
+        <div class="skills-group__list">{{ software | join(', ') }}</div>
+      </div>
+      {% endif %}
+
+      {% if languages %}
+      <div class="skills-group__bucket">
+        <div class="skills-group__label">Languages</div>
+        <div class="skills-group__list">{{ languages | join(', ') }}</div>
+      </div>
+      {% endif %}
+
+      {% if other %}
+      <div class="skills-group__bucket">
+        <div class="skills-group__label">Additional</div>
+        <div class="skills-group__list">{{ other | join(', ') }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+{%- endmacro %}

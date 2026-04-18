@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Edit CV{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+<style>
+  .editor-shell { display:grid; grid-template-columns: minmax(0, 1.2fr) 380px; gap:24px; padding:24px; }
+  .panel { background:#fff; border:1px solid #e8e4d4; border-radius:20px; padding:20px; }
+  .field { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .field input, .field textarea { width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:12px; }
+  .preview-pane { overflow:auto; max-height:calc(100vh - 140px); background:#0f172a; border-radius:20px; padding:18px; }
+  .preview-frame { width:260px; overflow:hidden; background:#fff; border-radius:10px; margin:0 auto; }
+  .actions { display:flex; gap:12px; margin-top:16px; }
+  .btn { border:none; border-radius:12px; padding:10px 16px; cursor:pointer; }
+  .btn-primary { background:#111; color:#fff; }
+  .btn-secondary { background:#eee; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="editor-shell">
+  <div class="panel">
+    <h1>Edit your CV</h1>
+    <p>Both the editor preview and final result now use the same template partials.</p>
+
+    <div class="field">
+      <label>Full name</label>
+      <input id="full_name" value="{{ cv.full_name }}">
+    </div>
+
+    <div class="field">
+      <label>Headline</label>
+      <input id="headline" value="{{ cv.headline }}">
+    </div>
+
+    <div class="field">
+      <label>Career summary</label>
+      <textarea id="career_summary" rows="8">{{ cv.career_summary }}</textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="saveBtn">Save</button>
+      <a class="btn btn-secondary" href="{{ url_for('result_page', result_id=result_id) }}">Open Final Result</a>
+    </div>
+  </div>
+
+  <div class="preview-pane">
+    <div class="preview-frame">
+      <div class="cv-render scale-editor template-{{ template }}" id="cvPreview" style="--accent: {{ theme }};">
+        {% include 'cv/' + template + '.html' %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const state = {
+    resultId: {{ result_id|tojson }},
+    saved_template: {{ template|tojson }},
+    theme_color: {{ theme|tojson }},
+    resume_data: {{ cv|tojson }}
+  };
+
+  const fields = {
+    full_name: document.getElementById('full_name'),
+    headline: document.getElementById('headline'),
+    career_summary: document.getElementById('career_summary')
+  };
+
+  Object.entries(fields).forEach(([key, el]) => {
+    el.addEventListener('input', () => {
+      state.resume_data[key] = el.value;
+    });
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const res = await fetch(`/api/result/${state.resultId}/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      alert(data.error || 'Save failed');
+      return;
+    }
+    window.location.href = `/result/${state.resultId}`;
+  });
+</script>
+{% endblock %}
