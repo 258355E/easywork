@@ -570,6 +570,28 @@ button, input { font: inherit; }
   .hero-copy h1 { font-size: 2rem; }
   .hero-stats { grid-template-columns: 1fr 1fr; }
   .cv-grid { grid-template-columns: 1fr; }
+  .card-overlay {
+    position: static;
+    opacity: 1;
+    background: transparent;
+    justify-content: flex-start;
+    padding: 12px 18px 0;
+  }
+  .overlay-btn {
+    flex: 1 1 0;
+    text-align: center;
+  }
+  .card-preview {
+    height: 170px;
+  }
+  .topbar {
+    padding: 12px 14px;
+  }
+  .user-chip,
+  .toolbar-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
 </head>
@@ -847,11 +869,24 @@ button, input { font: inherit; }
     var id = deleteTargetId;
     closeModal();
 
+    function readApiResponse(r) {
+      var contentType = r.headers.get('content-type') || '';
+      if (contentType.indexOf('application/json') !== -1) {
+        return r.json();
+      }
+      return r.text().then(function (text) {
+        if (r.status === 401) {
+          return { ok: false, error: 'Your session expired. Please log in again.' };
+        }
+        return { ok: false, error: text || 'Request failed.' };
+      });
+    }
+
     fetch('/api/result/' + id + '/delete', {
       method: 'DELETE',
       credentials: 'same-origin'
     })
-    .then(function (r) { return r.json(); })
+    .then(readApiResponse)
     .then(function (data) {
       if (data.ok) {
         var card = document.querySelector('[data-id="' + id + '"]');

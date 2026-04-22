@@ -10,6 +10,13 @@
       <p>Upload your current resume, describe what should change, add your details, and let AI prepare a stronger version.</p>
     </div>
 
+    <div class="upload-progress" aria-label="Resume improvement steps">
+      <div class="progress-step active"><span>1</span><strong>Upload</strong></div>
+      <div class="progress-step"><span>2</span><strong>Guide AI</strong></div>
+      <div class="progress-step"><span>3</span><strong>Choose Template</strong></div>
+      <div class="progress-step"><span>4</span><strong>Edit & Export</strong></div>
+    </div>
+
     <div id="errorBox" class="alert alert-error"></div>
 
     <div class="upload-layout">
@@ -61,10 +68,24 @@
           <div class="form-actions">
             <button id="submitBtn" class="btn btn-primary" type="submit" disabled>Generate Improved CV</button>
           </div>
+
+          <div class="micro-trust">
+            <div class="micro-trust-item"><strong>Private workflow</strong><span>Your improved CV stays in your account for editing and export.</span></div>
+            <div class="micro-trust-item"><strong>Better input, better output</strong><span>Change notes and job descriptions help produce a stronger result.</span></div>
+          </div>
         </form>
       </div>
 
       <aside class="side-stack">
+        <div class="panel panel-highlight">
+          <h3 class="panel-title">Best results come from 3 inputs</h3>
+          <div class="mini-checklist">
+            <div><strong>Current CV</strong><span>Start with the resume you already have.</span></div>
+            <div><strong>Clear change request</strong><span>Explain the tone, focus, and what should be removed.</span></div>
+            <div><strong>Target role</strong><span>Paste the job description so the wording becomes more relevant.</span></div>
+          </div>
+        </div>
+
         <div class="panel">
           <h3 class="panel-title">How it works</h3>
           <div class="step-list">
@@ -138,6 +159,27 @@
   function clearError() {
     errorBox.textContent = '';
     errorBox.style.display = 'none';
+  }
+
+  async function readApiResponse(res) {
+    const contentType = res.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      return await res.json();
+    }
+
+    const text = await res.text();
+    const htmlLike = text.trim().startsWith('<!doctype') || text.trim().startsWith('<html') || text.trim().startsWith('<');
+
+    if (res.status === 401) {
+      return { ok: false, error: 'Your session expired. Please log in again.' };
+    }
+
+    if (htmlLike) {
+      return { ok: false, error: 'The server returned an unexpected page instead of API data. Please try again, and if it continues, check the server logs for /api/improve-cv.' };
+    }
+
+    return { ok: false, error: text || 'Processing failed.' };
   }
 
   function updateSubmitState() {
@@ -238,7 +280,7 @@
         method: 'POST',
         body: fd
       });
-      const data = await res.json();
+      const data = await readApiResponse(res);
 
       if (!data.ok) {
         throw new Error(data.error || 'Processing failed.');

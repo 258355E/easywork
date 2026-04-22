@@ -7,12 +7,12 @@
 <style>
   :root {
     --accent: {{ theme or '#ba7517' }};
-    --bg: #f4f2ee;
+    --bg: #f8f5ed;
     --card-bg: #ffffff;
-    --border: #e5e2db;
+    --border: #e8e2d3;
     --text: #1a1a1a;
-    --muted: #777;
-    --shadow: 0 8px 30px rgba(0,0,0,0.08);
+    --muted: #6f6a61;
+    --shadow: 0 10px 30px rgba(0,0,0,0.07);
     --shadow-hover: 0 14px 40px rgba(0,0,0,0.12);
   }
 
@@ -93,7 +93,7 @@
   .selection-note {
     text-align: center;
     margin-bottom: 24px;
-    color: #666;
+    color: var(--muted);
     font-size: 14px;
   }
 
@@ -128,7 +128,7 @@
     position: relative;
     height: 430px;
     overflow: hidden;
-    background: linear-gradient(to bottom, #faf8f2, #f5f1e7);
+    background: linear-gradient(to bottom, #faf8f2, #f2ede1);
     border-bottom: 1px solid var(--border);
   }
 
@@ -193,8 +193,8 @@
   }
 
   .choose-btn {
-    border: none;
-    background: #111;
+    border: 1px solid transparent;
+    background: var(--accent);
     color: #fff;
     border-radius: 12px;
     padding: 10px 18px;
@@ -218,7 +218,7 @@
 
   .continue-btn {
     border: none;
-    background: #111;
+    background: var(--accent);
     color: #fff;
     border-radius: 14px;
     padding: 14px 26px;
@@ -254,6 +254,29 @@
       width: 100%;
     }
   }
+
+  @media (max-width: 560px) {
+    .filter-bar {
+      justify-content: flex-start;
+    }
+
+    .selection-note {
+      text-align: left;
+    }
+
+    .preview-shell {
+      height: 320px;
+    }
+
+    .preview-scale {
+      transform: scale(0.24);
+      width: 416%;
+    }
+
+    .continue-btn {
+      width: 100%;
+    }
+  }
 </style>
 {% endblock %}
 
@@ -269,13 +292,13 @@
   <div class="filter-bar">
     <span class="filter-label">Color</span>
 
-    <button class="color-swatch {% if theme == '#1a1a1a' %}active{% endif %}" style="background:#1a1a1a;" data-color="#1a1a1a" title="Charcoal" type="button"></button>
-    <button class="color-swatch {% if theme == '#c0392b' %}active{% endif %}" style="background:#c0392b;" data-color="#c0392b" title="Red" type="button"></button>
-    <button class="color-swatch {% if theme == '#2980b9' %}active{% endif %}" style="background:#2980b9;" data-color="#2980b9" title="Blue" type="button"></button>
-    <button class="color-swatch {% if theme == '#16a085' %}active{% endif %}" style="background:#16a085;" data-color="#16a085" title="Teal" type="button"></button>
-    <button class="color-swatch {% if theme == '#8e44ad' %}active{% endif %}" style="background:#8e44ad;" data-color="#8e44ad" title="Purple" type="button"></button>
-    <button class="color-swatch {% if theme == '#d35400' %}active{% endif %}" style="background:#d35400;" data-color="#d35400" title="Orange" type="button"></button>
-    <button class="color-swatch {% if theme == '#27ae60' %}active{% endif %}" style="background:#27ae60;" data-color="#27ae60" title="Green" type="button"></button>
+    <button class="color-swatch {% if theme == '#1f2937' %}active{% endif %}" style="background:#1f2937;" data-color="#1f2937" title="Slate" type="button"></button>
+    <button class="color-swatch {% if theme == '#9f1239' %}active{% endif %}" style="background:#9f1239;" data-color="#9f1239" title="Berry" type="button"></button>
+    <button class="color-swatch {% if theme == '#1d4ed8' %}active{% endif %}" style="background:#1d4ed8;" data-color="#1d4ed8" title="Blue" type="button"></button>
+    <button class="color-swatch {% if theme == '#0f766e' %}active{% endif %}" style="background:#0f766e;" data-color="#0f766e" title="Teal" type="button"></button>
+    <button class="color-swatch {% if theme == '#7c3aed' %}active{% endif %}" style="background:#7c3aed;" data-color="#7c3aed" title="Violet" type="button"></button>
+    <button class="color-swatch {% if theme == '#ba7517' %}active{% endif %}" style="background:#ba7517;" data-color="#ba7517" title="Amber" type="button"></button>
+    <button class="color-swatch {% if theme == '#166534' %}active{% endif %}" style="background:#166534;" data-color="#166534" title="Forest" type="button"></button>
   </div>
 
   <div class="selection-note">

@@ -7,6 +7,11 @@
     <div class="hero-copy">
       <span class="eyebrow">AI-powered resume improvement</span>
       <h1 class="hero-title">Build a stronger CV with a cleaner, smarter workflow.</h1>
+      {% if request.args.get('auth_error') %}
+        <div class="form-error" style="display:block; margin: 0 0 18px;">
+          Google sign-in failed. Please try again.
+        </div>
+      {% endif %}
       <p class="hero-subtitle">
         Upload your resume, tailor it for a job, choose a professional template,
         edit it with confidence, and export a polished final CV.
@@ -19,6 +24,16 @@
         {% else %}
           <a href="{{ url_for('login') }}" class="btn btn-primary">Login with Google</a>
         {% endif %}
+      </div>
+      <div class="hero-proof">
+        <div class="proof-item">
+          <strong>AI-first</strong>
+          <span>Sharper writing, stronger structure, better role targeting</span>
+        </div>
+        <div class="proof-item">
+          <strong>Fast workflow</strong>
+          <span>Upload, refine, choose a template, and export in one flow</span>
+        </div>
       </div>
 
       <div class="trust-row">
@@ -71,6 +86,34 @@
         <h3>Production-style UX</h3>
         <p>Cleaner navigation, clearer actions, stronger hierarchy, and easier editing on desktop and mobile.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="container">
+    <div class="section-head left">
+      <span class="eyebrow">Workflow</span>
+      <h2>Designed to remove the usual CV friction</h2>
+      <p>Instead of bouncing between tools, users move through one guided experience from upload to final export.</p>
+    </div>
+
+    <div class="journey-grid">
+      <article class="journey-card">
+        <span class="journey-step">01</span>
+        <h3>Upload what you already have</h3>
+        <p>Start from your current resume instead of rebuilding everything from scratch.</p>
+      </article>
+      <article class="journey-card">
+        <span class="journey-step">02</span>
+        <h3>Tell the app what to improve</h3>
+        <p>Add your job target, edits, and new details so the output feels specific and intentional.</p>
+      </article>
+      <article class="journey-card">
+        <span class="journey-step">03</span>
+        <h3>Polish the final result</h3>
+        <p>Choose a stronger template, make edits quickly, and export a more credible CV.</p>
+      </article>
     </div>
   </div>
 </section>
