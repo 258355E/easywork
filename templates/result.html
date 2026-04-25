@@ -101,39 +101,6 @@
   @media (max-width: 1080px) {
     .workspace-layout { grid-template-columns: 1fr; }
     .editor-panel { position: static; }
-    .workspace-head {
-      flex-direction: column;
-    }
-  }
-  @media (max-width: 720px) {
-    .page-shell {
-      padding: 20px 14px 40px;
-    }
-    .toolbar-group {
-      width: 100%;
-    }
-    .toolbar-group .btn {
-      width: 100%;
-    }
-    .editor-panel,
-    .cv-stage-wrap {
-      padding: 16px;
-      border-radius: 18px;
-    }
-  }
-  @media (max-width: 560px) {
-    .workspace-head h1 {
-      font-size: 2rem;
-    }
-    .range-row {
-      grid-template-columns: 1fr;
-    }
-    .range-value {
-      justify-self: start;
-    }
-    .cv-stage-wrap {
-      padding: 10px;
-    }
   }
   @media print {
     @page {
@@ -427,19 +394,6 @@
       markDirty('Layout adjusted. Save to keep it.');
     }
 
-    async function readApiResponse(res) {
-      const contentType = res.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
-        return await res.json();
-      }
-
-      const text = await res.text();
-      if (res.status === 401) {
-        return { ok: false, error: 'Your session expired. Please log in again.' };
-      }
-      return { ok: false, error: text || 'Request failed.' };
-    }
-
     async function saveChanges() {
       try {
         const res = await fetch(`/api/result/${APP.resultId}/update`, {
@@ -451,7 +405,7 @@
             theme_color: APP.theme
           })
         });
-        const data = await readApiResponse(res);
+        const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Save failed.');
         markSaved('Changes saved.');
       } catch (error) {

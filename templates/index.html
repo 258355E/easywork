@@ -1,120 +1,137 @@
 {% extends "base.html" %}
-{% block title %}Easywork.LK | AI CV Improvement{% endblock %}
+{% block title %}EasyWork.LK | Land Your Dream Job with an AI-Optimized CV{% endblock %}
 
 {% block content %}
-<section class="hero hero-home">
+<div class="promo-banner glass-banner">
+  <div class="container text-center">
+    <span class="pulse-dot"></span>
+    <strong>Launch Special!</strong> Unlock Premium AI CV Generation for just 
+    <span class="price-highlight">Rs 300</span> <s class="price-strike">Rs 1500</s> 
+    — <em>Save 80% today only!</em>
+  </div>
+</div>
+
+<section class="hero hero-home hero-gradient-bg">
   <div class="container hero-grid">
+    
     <div class="hero-copy">
-      <span class="eyebrow">AI-powered resume improvement</span>
-      <h1 class="hero-title">Build a stronger CV with a cleaner, smarter workflow.</h1>
-      {% if request.args.get('auth_error') %}
-        <div class="form-error" style="display:block; margin: 0 0 18px;">
-          Google sign-in failed. Please try again.
-        </div>
-      {% endif %}
+      <div class="eyebrow-wrapper">
+        <span class="eyebrow badge-glass">✨ Trusted by 5,000+ Sri Lankan Job Seekers</span>
+      </div>
+      
+      <h1 class="hero-title">
+        <span class="text-gradient">Build your future with confidence.</span>
+      </h1>
       <p class="hero-subtitle">
-        Upload your resume, tailor it for a job, choose a professional template,
-        edit it with confidence, and export a polished final CV.
+        Don't let Applicant Tracking Systems (ATS) reject you. Our AI instantly analyzes your experience, rewrites your bullet points, and wraps it in a recruiter-approved design.
       </p>
 
       <div class="hero-actions">
         {% if user %}
-          <a href="{{ url_for('improve') }}" class="btn btn-primary">Start Improving</a>
-          <a href="{{ url_for('documents') }}" class="btn btn-secondary">Open My Documents</a>
+          <a href="{{ url_for('improve') }}" class="btn btn-primary btn-glow">
+            Claim Offer & Build My CV <span class="arrow">→</span>
+          </a>
+          <a href="{{ url_for('documents') }}" class="btn btn-secondary glass-btn">
+            My Documents
+          </a>
         {% else %}
-          <a href="{{ url_for('login') }}" class="btn btn-primary">Login with Google</a>
+          <a href="{{ url_for('login') }}" class="btn btn-primary btn-glow">
+            Start for Free with Google
+          </a>
+          <span class="sub-action-text">Takes 3 seconds. No credit card required.</span>
         {% endif %}
       </div>
-      <div class="hero-proof">
-        <div class="proof-item">
-          <strong>AI-first</strong>
-          <span>Sharper writing, stronger structure, better role targeting</span>
-        </div>
-        <div class="proof-item">
-          <strong>Fast workflow</strong>
-          <span>Upload, refine, choose a template, and export in one flow</span>
-        </div>
-      </div>
 
-      <div class="trust-row">
-        <div class="trust-item"><span class="tick">✓</span><span>Secure file handling</span></div>
-        <div class="trust-item"><span class="tick">✓</span><span>Template-based export</span></div>
-        <div class="trust-item"><span class="tick">✓</span><span>Fast AI-assisted editing</span></div>
+      <div class="trust-row mt-4">
+        <div class="trust-item"><span class="icon-check">✔</span><span>ATS-Friendly Formats</span></div>
+        <div class="trust-item"><span class="icon-check">✔</span><span>Bank-Grade Security</span></div>
+        <div class="trust-item"><span class="icon-check">✔</span><span>1-Click Export</span></div>
       </div>
     </div>
 
-    <div class="hero-card glass-card">
-      <div class="mock-sheet">
-        <div class="mock-top"></div>
-        <div class="mock-name"></div>
-        <div class="mock-line w80"></div>
-        <div class="mock-line w60"></div>
-        <div class="mock-section"></div>
-        <div class="mock-line w90"></div>
-        <div class="mock-line w85"></div>
-        <div class="mock-line w75"></div>
-        <div class="mock-section"></div>
-        <div class="mock-line w95"></div>
-        <div class="mock-line w70"></div>
-      </div>
-      <div class="mini-stats">
-        <div class="stat"><strong>1</strong><span>Upload</span></div>
-        <div class="stat"><strong>2</strong><span>Choose Template</span></div>
-        <div class="stat"><strong>3</strong><span>Edit & Export</span></div>
+    <div class="hero-visual">
+      <div class="hero-card glass-card float-animation">
+        <div class="mock-sheet optimized-sheet">
+          <div class="mock-header">
+            <div class="mock-name gradient-bg"></div>
+            <div class="mock-contact w60"></div>
+          </div>
+          <div class="mock-body">
+            <div class="mock-badge score-loader" data-target-score="98">
+              <span>AI Optimized Score:</span>
+              <strong><span class="score-value">0</span>%</strong>
+              <div class="score-track" aria-hidden="true">
+                <div class="score-fill"></div>
+              </div>
+            </div>
+            <div class="mock-line w90"></div>
+            <div class="mock-line w85"></div>
+            <div class="mock-line w75"></div>
+            <div class="mock-section-title"></div>
+            <div class="mock-line w95"></div>
+            <div class="mock-line w70"></div>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<section class="section">
+<section class="section features-section">
   <div class="container">
-    <div class="section-head">
-      <span class="eyebrow">Why this version is better</span>
-      <h2>One product, one UI system, one reliable flow</h2>
+    <div class="section-head text-center">
+      <span class="eyebrow text-accent">Why Top Candidates Use EasyWork.LK</span>
+      <h2>Your unfair advantage in the job market</h2>
+      <p class="section-subtext">We replaced generic templates with data-driven design and AI precision.</p>
     </div>
 
     <div class="feature-grid">
-      <div class="feature-card">
-        <h3>Consistent branding</h3>
-        <p>Every page now uses one design language instead of mixed product identities.</p>
+      <div class="feature-card glass-panel hover-lift">
+        <div class="feature-icon bg-red-soft">🤖</div>
+        <h3>Beat the ATS Bots</h3>
+        <p>Over 75% of resumes are rejected by automated software. Our structured templates ensure your resume is parsed perfectly every time.</p>
       </div>
-      <div class="feature-card">
-        <h3>Template persistence</h3>
-        <p>Your selected template and theme color are saved and reused across edit, result, and documents.</p>
+      
+      <div class="feature-card glass-panel hover-lift">
+        <div class="feature-icon bg-blue-soft">⚡</div>
+        <h3>1-Click AI Tailoring</h3>
+        <p>Stop rewriting your CV for every application. Paste the job description, and our AI instantly aligns your skills to match the role.</p>
       </div>
-      <div class="feature-card">
-        <h3>Production-style UX</h3>
-        <p>Cleaner navigation, clearer actions, stronger hierarchy, and easier editing on desktop and mobile.</p>
+      
+      <div class="feature-card glass-panel hover-lift">
+        <div class="feature-icon bg-purple-soft">🎯</div>
+        <h3>Recruiter-Approved Designs</h3>
+        <p>No more formatting nightmares. Choose from beautiful, responsive templates designed specifically to catch a human eye in 6 seconds.</p>
       </div>
     </div>
   </div>
 </section>
+{% endblock %}
 
-<section class="section section-soft">
-  <div class="container">
-    <div class="section-head left">
-      <span class="eyebrow">Workflow</span>
-      <h2>Designed to remove the usual CV friction</h2>
-      <p>Instead of bouncing between tools, users move through one guided experience from upload to final export.</p>
-    </div>
+{% block scripts %}
+<script>
+  document.querySelectorAll('.score-loader').forEach((score) => {
+    const value = score.querySelector('.score-value');
+    const fill = score.querySelector('.score-fill');
+    const target = Number(score.dataset.targetScore || 98);
+    const duration = 1800;
+    const start = performance.now();
 
-    <div class="journey-grid">
-      <article class="journey-card">
-        <span class="journey-step">01</span>
-        <h3>Upload what you already have</h3>
-        <p>Start from your current resume instead of rebuilding everything from scratch.</p>
-      </article>
-      <article class="journey-card">
-        <span class="journey-step">02</span>
-        <h3>Tell the app what to improve</h3>
-        <p>Add your job target, edits, and new details so the output feels specific and intentional.</p>
-      </article>
-      <article class="journey-card">
-        <span class="journey-step">03</span>
-        <h3>Polish the final result</h3>
-        <p>Choose a stronger template, make edits quickly, and export a more credible CV.</p>
-      </article>
-    </div>
-  </div>
-</section>
+    const animateScore = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(target * eased);
+
+      value.textContent = String(current);
+      fill.style.width = `${current}%`;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScore);
+      }
+    };
+
+    requestAnimationFrame(animateScore);
+  });
+</script>
 {% endblock %}

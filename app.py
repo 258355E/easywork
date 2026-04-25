@@ -3,9 +3,8 @@ import re
 import time
 import uuid
 import json
-import logging
 from pathlib import Path
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
 from flask import (
@@ -18,11 +17,9 @@ from flask import (
     jsonify,
 )
 from authlib.integrations.flask_client import OAuth
-from authlib.integrations.base_client.errors import OAuthError
 from werkzeug.utils import secure_filename
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import RequestEntityTooLarge
+from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
 from google import genai
 from flask_sqlalchemy import SQLAlchemy
 
@@ -31,7 +28,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
 
 app = Flask(__name__)
-app.logger.setLevel(logging.INFO)
 
 
 def env_truthy(name: str, default: bool = False) -> bool:
@@ -42,7 +38,6 @@ def env_truthy(name: str, default: bool = False) -> bool:
 
 
 IS_DEBUG = env_truthy("FLASK_DEBUG", default=False) or os.getenv("FLASK_ENV") == "development"
-PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL", "").strip().rstrip("/")
 
 secret = os.getenv("FLASK_SECRET_KEY")
 if not secret:
@@ -56,7 +51,6 @@ app.secret_key = secret
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = env_truthy("SESSION_COOKIE_SECURE", default=not IS_DEBUG)
-app.config["PREFERRED_URL_SCHEME"] = "https" if PUBLIC_BASE_URL.startswith("https://") else "http"
 
 UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
@@ -71,21 +65,6 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE + (1024 * 1024)
 if env_truthy("TRUST_PROXY", default=False):
     # For deployments behind a reverse proxy (Render/NGINX/etc.).
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
-
-
-def external_url_for(endpoint: str, **values):
-    path = url_for(endpoint, _external=False, **values)
-    if PUBLIC_BASE_URL:
-        return urljoin(f"{PUBLIC_BASE_URL}/", path.lstrip("/"))
-    return url_for(endpoint, _external=True, **values)
-
-
-def is_api_request() -> bool:
-    return request.path.startswith("/api/")
-
-
-def api_error(message: str, status_code: int = 500):
-    return jsonify({"ok": False, "error": message}), status_code
 
 ALLOWED_TEMPLATES = {
     "classic",
@@ -209,25 +188,26 @@ def add_security_headers(response):
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_request_too_large(_e):
-    if is_api_request():
-        return api_error("File too large.", 413)
+    if request.path.startswith("/api/"):
+        return jsonify({"ok": False, "error": "File too large."}), 413
     return "File too large.", 413
 
 
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
-    if is_api_request():
-        message = getattr(e, "description", None) or "Request failed."
-        return api_error(message, e.code or 500)
+    if request.path.startswith("/api/"):
+        return jsonify({"ok": False, "error": e.description or e.name}), e.code
     return e
 
 
 @app.errorhandler(Exception)
 def handle_unexpected_exception(e):
-    app.logger.exception("Unhandled error on %s %s", request.method, request.path, exc_info=e)
-    if is_api_request():
-        return api_error("Something went wrong on the server. Please try again.", 500)
-    return "Something went wrong on the server. Please try again.", 500
+    if isinstance(e, HTTPException):
+        return handle_http_exception(e)
+    if request.path.startswith("/api/"):
+        app.logger.exception("Unhandled API error")
+        return jsonify({"ok": False, "error": "Something went wrong while processing your request."}), 500
+    raise e
 
 
 def allowed_file(filename: str) -> bool:
@@ -615,27 +595,16 @@ def index():
 
 @app.route("/login")
 def login():
-    redirect_uri = external_url_for("auth_callback")
+    redirect_uri = url_for("auth_callback", _external=True)
     return google.authorize_redirect(redirect_uri)
 
 
 @app.route("/callback")
 def auth_callback():
-    try:
-        token = google.authorize_access_token()
-        user_info = token.get("userinfo")
-        if not user_info:
-            user_info = google.get("userinfo").json()
-    except OAuthError as e:
-        app.logger.warning("Google OAuth callback failed: %s", getattr(e, "description", str(e)))
-        return redirect(url_for("index", auth_error="google_signin_failed"))
-    except Exception as e:
-        app.logger.exception("Unexpected Google OAuth callback failure", exc_info=e)
-        return redirect(url_for("index", auth_error="google_signin_failed"))
-
-    if not user_info or not user_info.get("sub"):
-        app.logger.warning("Google OAuth callback returned incomplete user info")
-        return redirect(url_for("index", auth_error="google_signin_failed"))
+    token = google.authorize_access_token()
+    user_info = token.get("userinfo")
+    if not user_info:
+        user_info = google.get("userinfo").json()
 
     session["user"] = {
         "id": user_info.get("sub"),
@@ -866,8 +835,7 @@ def preview_result_api(result_id):
         )
         return jsonify({"ok": True, "html": html})
     except Exception as e:
-        app.logger.exception("Preview render failed for result %s", result_id, exc_info=e)
-        return api_error("Preview render failed.", 500)
+        return jsonify({"ok": False, "error": f"Preview render failed: {str(e)}"}), 500
 
 
 @app.route("/api/result/<result_id>/update", methods=["POST"])
@@ -996,10 +964,9 @@ def reuse_cv_api():
             }
         )
     except json.JSONDecodeError:
-        return api_error("Gemini returned invalid JSON. Please try again.", 500)
+        return jsonify({"ok": False, "error": "Gemini returned invalid JSON. Please try again."}), 500
     except Exception as e:
-        app.logger.exception("Reuse CV failed for result %s", reuse_id, exc_info=e)
-        return api_error("We couldn't reuse that CV right now. Please try again.", 500)
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 
 @app.route("/api/improve-cv", methods=["POST"])
@@ -1054,10 +1021,9 @@ def improve_cv_api():
                 }
             )
         except json.JSONDecodeError:
-            return api_error("Gemini returned invalid JSON. Please try again.", 500)
+            return jsonify({"ok": False, "error": "Gemini returned invalid JSON. Please try again."}), 500
         except Exception as e:
-            app.logger.exception("Reuse-from-improve flow failed for result %s", reuse_id, exc_info=e)
-            return api_error("We couldn't reuse that CV right now. Please try again.", 500)
+            return jsonify({"ok": False, "error": str(e)}), 500
 
     if "cv_file" not in request.files:
         return jsonify({"ok": False, "error": "CV file is required."}), 400
@@ -1077,14 +1043,12 @@ def improve_cv_api():
     if size > MAX_FILE_SIZE:
         return jsonify({"ok": False, "error": "CV file must be under 10 MB."}), 400
 
-    saved_path = None
+    safe_name = secure_filename(cv_file.filename)
+    unique_name = f"{uuid.uuid4().hex}_{safe_name}"
+    saved_path = os.path.join(UPLOAD_FOLDER, unique_name)
 
     try:
-        safe_name = secure_filename(cv_file.filename)
-        unique_name = f"{uuid.uuid4().hex}_{safe_name}"
-        saved_path = os.path.join(UPLOAD_FOLDER, unique_name)
         cv_file.save(saved_path)
-
         uploaded_cv = gemini_client.files.upload(file=saved_path)
         uploaded_cv = wait_for_gemini_file(uploaded_cv)
 
@@ -1131,16 +1095,15 @@ def improve_cv_api():
         )
 
     except json.JSONDecodeError:
-        return api_error("Gemini returned invalid JSON. Please try again.", 500)
+        return jsonify({"ok": False, "error": "Gemini returned invalid JSON. Please try again."}), 500
     except Exception as e:
-        app.logger.exception("Improve CV upload flow failed", exc_info=e)
-        return api_error("We couldn't process that CV right now. Please try again.", 500)
+        return jsonify({"ok": False, "error": str(e)}), 500
     finally:
-        if saved_path and os.path.exists(saved_path):
-            try:
+        try:
+            if os.path.exists(saved_path):
                 os.remove(saved_path)
-            except OSError:
-                pass
+        except OSError:
+            app.logger.warning("Could not remove temporary CV upload: %s", saved_path)
 
 # @app.route("/api/result/<result_id>/preview", methods=["POST"])
 # def preview_result_api(result_id):
